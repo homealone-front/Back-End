@@ -34,24 +34,21 @@ public class DataInit implements CommandLineRunner {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final RecipeService recipeService;
-    private final TalkService talkService;
-    private final UsedTradeService usedTradeService;
-    private final RoomService roomService;
 
     @Override
     public void run(String... args) throws Exception {
 
         // 테스트 유저 생성
-        String email = "test1@test.com";
+        String email = "test@naholo.site";
         Member user = null;
         if (!memberRepository.existsByEmail(email)) {
             user = Member.builder()
-                .name("유저")
-                .birth(LocalDate.of(1945, 4, 28))
+                .name("테스트유저")
+                .birth(LocalDate.of(1900, 1, 1))
                 .email(email)
-                .firstAddress("Deageon")
+                .firstAddress("대전광역시")
                 .secondAddress("유성구")
-                .password(passwordEncoder.encode("1234"))
+                .password(passwordEncoder.encode("Asdf@1234"))
                 .imageUrl(email)
                 .role(Role.ROLE_USER) // 유저 역할 설정
                 .build();
@@ -63,10 +60,10 @@ public class DataInit implements CommandLineRunner {
         if (!memberRepository.existsByEmail(email)) {
             user2 = Member.builder()
                     .name("관리자")
-                    .birth(LocalDate.of(1945, 4, 28))
+                    .birth(LocalDate.of(1900, 1, 1))
                     .email(email)
-                    .firstAddress("Deageon")
-                    .secondAddress("동구")
+                    .firstAddress("대전광역시")
+                    .secondAddress("서구")
                     .password(passwordEncoder.encode("Asdf@1234"))
                     .role(Role.ROLE_ADMIN) // 유저 역할 설정
                     .build();
