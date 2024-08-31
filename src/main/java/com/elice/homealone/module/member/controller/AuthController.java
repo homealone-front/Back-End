@@ -21,6 +21,9 @@ public class AuthController {
     private final AuthService authService;
     private final OAuthService oAuthService;
 
+    /**
+     * 현재 사이트를 읽기전용으로 변경해놓기 위해서 회원가입 기능 임시로 막아둠
+     */
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody SignupRequestDto signupRequestDTO) {
@@ -28,6 +31,9 @@ public class AuthController {
         return new ResponseEntity<>("회원가입에 성공했습니다.", HttpStatus.OK);
     }
 
+    /**
+     * 현재 사이트를 읽기전용으로 변경해놓기 위해서 로그인 기능 임시로 막아둠
+     */
     @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginRequestDto loginRequestDTO,
