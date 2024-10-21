@@ -1,18 +1,20 @@
-## 나홀로집에 프로젝트 [BackEnd]
-"나홀로집에"는 세상의 모든 케빈들이 외롭지 않도록 1인 가구를 위한 소통의 장입니다.
-<br><br>
-혼자만의 생활을 더 풍요롭게 만들고 싶다면 우리 커뮤니티를 이용하여 일상을 나눠보세요!
 
-<br>
-<a href ="http://34.22.76.244/">
-    <p align="center">
-      <img src="src/main/resources/static/img/homealone2.png">
-    </p>
-</a>
 
-In progress 2024.05.15~2024.06.15 <br><br>
+## Active Team Members
+<table style="width: 100%;">
+  <tr>
+    <td style="width: 14%; text-align: center;"><img src="src/main/resources/static/img/gyj.jpg" width="80" height="80"></td>
+  </tr>
+  <tr>
+    <td style="width: 14%; text-align: center;"><a href="https://github.com/mylazysundaycat"><strong>BE 팀원 권예지</strong></a></td>
+  </tr>
+</table>
 
-## 멤버 구성
+✔️권예지
+- AWS EC2와 RDS를 사용해 기존 서버의 데이터를 새로운 서버로 migration
+
+## Former Team Members
+
 <table style="width: 100%;">
   <tr>
     <td style="width: 14%; text-align: center;"><img src="src/main/resources/static/img/asm.png" width="80" height="80"></td>
@@ -78,33 +80,18 @@ In progress 2024.05.15~2024.06.15 <br><br>
 
 ✔️Backend<br>
 
-<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=openjdk&logoColor=white">
-<img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
-<img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white">
-<img src="https://img.shields.io/badge/Spring Data-FF5E00?style=for-the-badge&logo=spring&logoColor=white">
-<img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white">
-<img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white">
-<img src="https://img.shields.io/badge/OAuth-4285F4?style=for-the-badge&logo=oauth&logoColor=white">
-<img src="https://img.shields.io/badge/Socket IO-010101?style=for-the-badge&logo=socket.io&logoColor=white">
+<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=openjdk&logoColor=white"><img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"><img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=Spring Boot&logoColor=white"><img src="https://img.shields.io/badge/Spring Data-FF5E00?style=for-the-badge&logo=spring&logoColor=white"><img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white"><img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white"><img src="https://img.shields.io/badge/OAuth-4285F4?style=for-the-badge&logo=oauth&logoColor=white"><img src="https://img.shields.io/badge/Socket IO-010101?style=for-the-badge&logo=socket.io&logoColor=white">
 
 ✔️DB<br>
-<img src="https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white">
-<img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white">
-<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
-<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
-<img src="https://img.shields.io/badge/H2-0078D7?style=for-the-badge&logo=h2&logoColor=white">
+<img src="https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white"><img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white"><img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"><img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"><img src="https://img.shields.io/badge/H2-0078D7?style=for-the-badge&logo=h2&logoColor=white">
 
 ✔️CI/CD<br>
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
-<img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white">
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"><img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white">
 
 ✔️Deployment<br>
-<img src="https://img.shields.io/badge/VM-0078D4?style=for-the-badge&logo=vmware&logoColor=white">
-<img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=aws&logoColor=white">
+<img src="https://img.shields.io/badge/VM-0078D4?style=for-the-badge&logo=vmware&logoColor=white"><img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=aws&logoColor=white">
 
 ✔️Communication<br>
-<img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white">
-<img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
-
+<img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
 
 
