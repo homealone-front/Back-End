@@ -31,9 +31,6 @@ public class AuthController {
         return new ResponseEntity<>("회원가입에 성공했습니다.", HttpStatus.OK);
     }
 
-    /**
-     * 현재 사이트를 읽기전용으로 변경해놓기 위해서 로그인 기능 임시로 막아둠
-     */
     @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginRequestDto loginRequestDTO,
@@ -45,7 +42,7 @@ public class AuthController {
 
     @Operation(summary = "AccessToken 재발급")
     @GetMapping("/token/refresh")
-    public ResponseEntity<TokenDto> refreshAceessToken(HttpServletRequest request) {
+    public ResponseEntity<TokenDto>  refreshAceessToken(HttpServletRequest request) {
         TokenDto tokenDto = authService.refreshAccessToken(request);
         return ResponseEntity.ok(tokenDto);
     }

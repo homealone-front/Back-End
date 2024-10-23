@@ -66,8 +66,8 @@ public class JwtTokenProvider {
             throw new JwtException("잘못된 JWT 시그니처");
         } catch (MalformedJwtException e) {
             throw new JwtException("유효하지 않은 JWT 토큰");
-        } catch (ExpiredJwtException e) {
-            throw new JwtException("토큰 기한 만료");
+        } catch (ExpiredJwtException e) { // 토큰이 만료된 경우
+            throw e;
         } catch (UnsupportedJwtException e) {
             throw new JwtException("Unsupported JWT token.");
         } catch (IllegalArgumentException e) {
