@@ -1,6 +1,5 @@
 package com.elice.homealone.global.config;
 
-import com.elice.homealone.global.jwt.JwtExceptionFilter;
 import com.elice.homealone.global.jwt.JwtAuthenticationFilter;
 import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.global.redis.RedisUtil;
@@ -32,7 +31,6 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
-    private final JwtExceptionFilter jwtExceptionFilter;
     private final RedisUtil redisUtil;
     private final WebConfig webConfig;
     
@@ -65,6 +63,7 @@ public class SecurityConfig {
                                     .requestMatchers(member).permitAll()
                                     .requestMatchers(resource).permitAll()
                                     .requestMatchers("/static/index.html", "/api/**", "/**").permitAll()
+                                    .requestMatchers("/api/token/refresh").permitAll() // refresh 요청 처리
                                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                                     .anyRequest().permitAll() //임시설정
                 )
@@ -76,8 +75,8 @@ public class SecurityConfig {
                                             response.getWriter().flush();
                                         })
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtExceptionFilter , JwtAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil), UsernamePasswordAuthenticationFilter.class);
+//                .addFilterBefore(jwtExceptionFilter , JwtAuthenticationFilter.class);
 
         return http.build();
     }
