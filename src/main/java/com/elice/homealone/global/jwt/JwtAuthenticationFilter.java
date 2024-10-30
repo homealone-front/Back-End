@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // TODO 에러처리 추가
                 throw new HomealoneException(ErrorCode.INVALID_TOKEN);
             }
-            if (token != null && jwtTokenProvider.validateToken(token)) {
+            if (token != null && jwtTokenProvider.validateAccessToken(token)) {
                 String email = jwtTokenProvider.getEmail(token);
                 Member member = (Member) userDetailsService.loadUserByUsername(email);
                 if (member != null) {
@@ -80,6 +80,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             setErrorResponse(request, response, e);
         }
     }
-
 }
 

@@ -1,5 +1,6 @@
 package com.elice.homealone.module.member.service;
 
+import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
 import com.elice.homealone.global.oauth.NaverProperties;
 import com.elice.homealone.module.member.dto.TokenDto;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,6 +27,22 @@ public class OAuthService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final NaverProperties naverProperties;
     private final AuthService authService;
+    @Value("${naver.url}")
+    private String NAVER_URL;
+    @Value("${kakao.url}")
+    private String KAKAO_URL;
+    @Value("${google.url}")
+    private String GOOGLE_URL;
+
+    public String getRedirectUrl(String platform) {
+        String redirectUrl = switch (platform.toLowerCase()) {
+            case "naver" -> NAVER_URL;
+            case "google" -> GOOGLE_URL;
+            case "kakao" -> KAKAO_URL;
+            default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
+        };
+        return redirectUrl;
+    }
 
     public Member getKakaoUserInfo(String kakaoAcessToken) {
         HttpHeaders headers = new HttpHeaders();

@@ -63,10 +63,11 @@ public class SecurityConfig {
                                     .requestMatchers(member).permitAll()
                                     .requestMatchers(resource).permitAll()
                                     .requestMatchers("/static/index.html", "/api/**", "/**").permitAll()
-                                    .requestMatchers("/api/token/refresh").permitAll() // refresh 요청 처리
+                                    .requestMatchers("/api/usedtrade").permitAll()
                                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                                     .anyRequest().permitAll() //임시설정
                 )
+
                 .logout(logout -> logout.logoutUrl("/logout")
                                         .invalidateHttpSession(true)
                                         .deleteCookies("JSESSIONID")
