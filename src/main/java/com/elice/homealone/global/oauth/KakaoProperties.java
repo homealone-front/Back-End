@@ -17,7 +17,6 @@ public class KakaoProperties {
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", clientId)
                 .queryParam("redirect_uri", redirectUri)
-                .queryParam("code", code)
                 .toUriString();
     }
 }

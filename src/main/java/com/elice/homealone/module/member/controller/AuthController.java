@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "AuthController", description = "인증 관리 API")
 public class AuthController {
     private final AuthService authService;
-    private final OAuthService oAuthService;
 
     /**
      * 현재 사이트를 읽기전용으로 변경해놓기 위해서 회원가입 기능 임시로 막아둠

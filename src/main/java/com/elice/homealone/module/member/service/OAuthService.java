@@ -11,6 +11,7 @@ import com.elice.homealone.module.member.dto.response.NaverTokenResponse;
 import com.elice.homealone.module.member.dto.response.NaverUserResponse;
 import com.elice.homealone.module.member.entity.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,19 +33,19 @@ public class OAuthService {
     private final KakaoProperties kakaoProperties;
     private final GoogleProperties googleProperties;
     private final AuthService authService;
-    @Value("${naver.url}")
-    private String NAVER_URL;
-    @Value("${kakao.url}")
-    private String KAKAO_URL;
-    @Value("${google.url}")
-    private String GOOGLE_URL;
+    @Value("${naver.uri}")
+    private String NAVER_URI;
+    @Value("${kakao.uri}")
+    private String KAKAO_URI;
+    @Value("${google.uri}")
+    private String GOOGLE_URI;
 
 
-    public String getRedirectUrl(String platform) {
+    public String getRedirectUri(String platform) {
         String redirectUrl = switch (platform.toLowerCase()) {
-            case "naver" -> NAVER_URL;
-            case "google" -> GOOGLE_URL;
-            case "kakao" -> KAKAO_URL;
+            case "naver" -> NAVER_URI;
+            case "google" -> GOOGLE_URI;
+            case "kakao" -> KAKAO_URI;
             default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
         };
         return redirectUrl;
@@ -54,10 +55,8 @@ public class OAuthService {
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
         // 1. 인증 code로 accessToken 요청
         String accessToken = requestAccessToken(platform, code);
-
         // 2. accessToken으로 사용자 정보 요청 및 Member 객체 생성
-        Member member = platform.equals("naver") ? getNaverUserInfo(accessToken) : getKakaoUserInfo(accessToken);
-
+        Member member = getUserInfo(platform, accessToken);
         // 3. 회원 가입/로그인 처리 후 토큰 발급
         return signupOrLogin(member, response);
     }
@@ -65,17 +64,16 @@ public class OAuthService {
     private String requestAccessToken(String platform, String code) {
         String tokenRequestUrl;
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        // 플랫폼별 토큰 발급 URL 및 요청 파라미터 설정
+        // 플랫폼 별  AccessToken 발급 요청
         switch (platform.toLowerCase()) {
             case "naver" -> {
-                tokenRequestUrl = naverProperties.getTokenRequestURL(code);
+                tokenRequestUrl = naverProperties.getTokenRequestURL();
             }
             case "kakao" -> {
-1                tokenRequestUrl = kakaoProperties.getTokenRequestURL(code);
+                tokenRequestUrl = kakaoProperties.getTokenRequestURL(code);
             }
             case "google" -> {
                 tokenRequestUrl = googleProperties.getTokenRequestURL(code);
@@ -85,6 +83,7 @@ public class OAuthService {
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
         ResponseEntity<String> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, request, String.class);
 
         // accessToken 파싱
@@ -94,6 +93,52 @@ public class OAuthService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Member getUserInfo(String platform, String accessToken) {
+        String userInfoUrl;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+
+        switch (platform.toLowerCase()) {
+            case "naver" -> userInfoUrl = "https://openapi.naver.com/v1/nid/me";
+            case "kakao" -> userInfoUrl = "https://kapi.kakao.com/v2/user/me";
+            case "google" -> userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo";
+            default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
+        }
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, String.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode jsonNode = objectMapper.readTree(response.getBody());
+            // 여기서 JSON 응답을 파싱하여 Member 객체에 필요한 정보를 추출합니다.
+            String email = jsonNode.get("email").asText();
+            String name = jsonNode.has("name") ? jsonNode.get("name").asText() : null;
+            String profileImageUrl = jsonNode.has("picture") ? jsonNode.get("picture").asText() : null;
+
+            return Member.builder()
+                    .email(email)
+                    .name(name)
+                    .imageUrl(profileImageUrl)
+                    .build();
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("사용자 정보 파싱에 실패했습니다.", e);
+        }
+    }
+
+
+    //accessToken을 통해 유저정보 획득
+    private NaverUserResponse.NaverUserDetail toRequestProfile(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
+
+        ResponseEntity<NaverUserResponse> response =
+                restTemplate.exchange("https://openapi.naver.com/v1/nid/me", HttpMethod.GET, request, NaverUserResponse.class);
+        return response.getBody().getNaverUserDetail();
     }
 
 
@@ -138,9 +183,6 @@ public class OAuthService {
 
 
 
-
-
-
     public Member getNaverUserInfo(String accessToken) {
         NaverUserResponse.NaverUserDetail profile = toRequestProfile(accessToken);
 
@@ -151,12 +193,12 @@ public class OAuthService {
                 .password(profile.getId())
                 .build();
     }
-    private String toRequestAccessToken(String code) {
-        ResponseEntity<NaverTokenResponse> response =
-                restTemplate.exchange(naverProperties.getTokenRequestURL(code), HttpMethod.GET, null, NaverTokenResponse.class);
-        // Validate를 만드는 것을 추천
-        return response.getBody().getAccessToken();
-    }
+//    private String toRequestAccessToken(String code) {
+//        ResponseEntity<NaverTokenResponse> response =
+//                restTemplate.exchange(naverProperties.getTokenRequestURL(code), HttpMethod.GET, null, NaverTokenResponse.class);
+//        // Validate를 만드는 것을 추천
+//        return response.getBody().getAccessToken();
+//    }
 
     //front에서 처리 해주시면서 kakao login과 동일하게 처리하도록 해당 코드는 deprecate함
     //GetMapping의 query parameter로 code를 받아올 때 사용함
@@ -178,16 +220,7 @@ public class OAuthService {
 //        return response.getBody().getAccessToken();
 //    }
 
-    //accessToken을 통해 유저정보 획득
-    private NaverUserResponse.NaverUserDetail toRequestProfile(String accessToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
 
-        ResponseEntity<NaverUserResponse> response =
-                restTemplate.exchange("https://openapi.naver.com/v1/nid/me", HttpMethod.GET, request, NaverUserResponse.class);
-        return response.getBody().getNaverUserDetail();
-    }
 
 
 //        public OAuthTokenDto getAccessToken(String code) {

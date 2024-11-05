@@ -12,13 +12,14 @@ public class NaverProperties {
     private String requestTokenUri;
     private String clientId;
     private String clientSecret;
+    private String redirectUri;
 
-    public String getTokenRequestURL(String code) {
+    public String getTokenRequestURL() {
         return UriComponentsBuilder.fromHttpUrl(requestTokenUri)
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", clientId)
                 .queryParam("client_secret", clientSecret)
-                .queryParam("code", code)
+                .queryParam("redirect_uri", redirectUri)
                 .toUriString();
     }
 }
