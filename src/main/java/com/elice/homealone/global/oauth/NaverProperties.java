@@ -13,7 +13,7 @@ public class NaverProperties {
     private String clientId;
     private String clientSecret;
 
-    public String getRequestURL(String code) {
+    public String getTokenRequestURL(String code) {
         return UriComponentsBuilder.fromHttpUrl(requestTokenUri)
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", clientId)
