@@ -10,6 +10,7 @@ import com.elice.homealone.module.member.dto.request.SignupRequestDto;
 import com.elice.homealone.module.member.dto.TokenDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.repository.MemberRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -112,8 +113,9 @@ public class AuthService{
                 }
             }
         }
+
         // 1. Refresh Token 검증
-        jwtTokenProvider.validateToken(refreshToken);
+        jwtTokenProvider.validateRefreshToken(refreshToken);
         // 2. Refresh Token에서 사용자 정보 추출
         String email = jwtTokenProvider.getEmail(refreshToken);
         // 3. 새로운 Access Token 생성

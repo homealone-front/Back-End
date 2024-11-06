@@ -10,7 +10,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
-    //400
+    //400 Bad Request
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     RECIPE_CREATION_FAILED(HttpStatus.BAD_REQUEST, "레시피 생성에 실패했습니다."),
     CHATROOM_CREATION_FAILED(HttpStatus.BAD_REQUEST, "자신의 게시물에 메시지를 요청할 수 없습니다"),
@@ -19,8 +19,8 @@ public enum ErrorCode {
     //401
     MISMATCHED_PASSWORD(UNAUTHORIZED, "비밀번호가 일치하지 않습니다"),
     INVALID_TOKEN(UNAUTHORIZED, "유효하지 않는 토큰입니다."),
-    EXPIRED_TOKEN(UNAUTHORIZED, "만료된 토큰입니다"),
-    JWT_EXCEPTION(UNAUTHORIZED, "토큰 오류입니다."),
+    EXPIRED_TOKEN(UNAUTHORIZED, "토큰 기한 만료"),
+    EXPIRED_REFRESH_TOKEN(UNAUTHORIZED, "토큰 기한 만료"),
     MEMBER_NOT_AUTHENTICATED(UNAUTHORIZED, "인증되지 않은 회원입니다."),
 
     //403

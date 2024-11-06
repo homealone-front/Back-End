@@ -65,6 +65,8 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(name = "deleted_at", nullable = false)
     private boolean deletedAt = false;
 
+
+
     public Member(String email, String password) {
         this.email=email;
         this.password=password;

@@ -1,5 +1,7 @@
 package com.elice.homealone.global.jwt;
 
+import com.elice.homealone.global.exception.ErrorCode;
+import com.elice.homealone.global.exception.HomealoneException;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,26 +58,35 @@ public class JwtTokenProvider {
                 .compact();
     }
     /**
-     * JWT 토큰 유효성 검증
+     * Access Token 검증
      */
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token) {
         try {
             String email = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
             return true;
-        } catch (SecurityException e) {
-            throw new JwtException("잘못된 JWT 시그니처");
-        } catch (MalformedJwtException e) {
-            throw new JwtException("유효하지 않은 JWT 토큰");
-        } catch (ExpiredJwtException e) { // 토큰이 만료된 경우
+        } catch (ExpiredJwtException e) {
             throw e;
-        } catch (UnsupportedJwtException e) {
-            throw new JwtException("Unsupported JWT token.");
-        } catch (IllegalArgumentException e) {
-            throw new JwtException("JWT token compact of handler are invalid.");
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new HomealoneException(ErrorCode.INVALID_TOKEN);
         }
     }
 
     /**
+     * Refresh Token 검증
+     */
+    public boolean validateRefreshToken(String token) {
+        try {
+            String email = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new HomealoneException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new HomealoneException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    /**
+     *
      * JWT 토큰으로 email 반환받는다.
      */
     public String getEmail(String token) {
