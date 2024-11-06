@@ -28,7 +28,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     private final RedisUtil redisUtil;
@@ -67,7 +66,6 @@ public class SecurityConfig {
                                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                                     .anyRequest().permitAll() //임시설정
                 )
-
                 .logout(logout -> logout.logoutUrl("/logout")
                                         .invalidateHttpSession(true)
                                         .deleteCookies("JSESSIONID")
@@ -77,7 +75,6 @@ public class SecurityConfig {
                                         })
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil), UsernamePasswordAuthenticationFilter.class);
-//                .addFilterBefore(jwtExceptionFilter , JwtAuthenticationFilter.class);
 
         return http.build();
     }

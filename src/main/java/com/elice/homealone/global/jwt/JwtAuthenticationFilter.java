@@ -39,9 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String token = jwtTokenProvider.resolveToken(request);
-            // 로그아웃이 된 토큰으로 접근 시도할 때
             if (token != null && redisUtil.hasKeyBlackList(token)) {
-                // TODO 에러처리 추가
                 throw new HomealoneException(ErrorCode.INVALID_TOKEN);
             }
             if (token != null && jwtTokenProvider.validateAccessToken(token)) {
