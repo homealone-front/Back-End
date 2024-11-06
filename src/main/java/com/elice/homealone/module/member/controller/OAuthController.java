@@ -19,6 +19,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@CrossOrigin(origins = "https://home-alone.site/")
 @Tag(name = "AuthController", description = "OAUTH2.0 인증 관리 API")
 public class OAuthController {
     private final OAuthService oAuthService;
