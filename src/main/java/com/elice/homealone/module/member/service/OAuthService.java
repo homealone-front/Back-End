@@ -149,7 +149,7 @@ public class OAuthService {
                     .build();
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("사용자 정보 파싱에 실패했습니다.", e);
+            throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
 
