@@ -88,6 +88,7 @@ public class AuthService{
         //2. refreshToken을 쿠키에서 삭제
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setMaxAge(0);
+        cookie.setPath("/");
         httpServletResponse.addCookie(cookie);
     }
 

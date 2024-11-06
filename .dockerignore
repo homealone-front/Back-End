@@ -15,6 +15,7 @@ target/
 
 # Development environment configuration
 **/src/main/resources/application-dev.properties
+**/src/main/resources/homealone-5e64e-firebase-adminsdk-exwdi-18befdc1b2.json
 
 # Q클래스
 /src/main/generated/

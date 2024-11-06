@@ -19,8 +19,8 @@ public enum ErrorCode {
     //401
     MISMATCHED_PASSWORD(UNAUTHORIZED, "비밀번호가 일치하지 않습니다"),
     INVALID_TOKEN(UNAUTHORIZED, "유효하지 않는 토큰입니다."),
-    EXPIRED_TOKEN(UNAUTHORIZED, "토큰 기한 만료"),
-    EXPIRED_REFRESH_TOKEN(UNAUTHORIZED, "토큰 기한 만료"),
+    EXPIRED_TOKEN(UNAUTHORIZED, "Aceess Token 만료"),
+    EXPIRED_REFRESH_TOKEN(UNAUTHORIZED, "Refresh Token 만료"),
     MEMBER_NOT_AUTHENTICATED(UNAUTHORIZED, "인증되지 않은 회원입니다."),
 
     //403

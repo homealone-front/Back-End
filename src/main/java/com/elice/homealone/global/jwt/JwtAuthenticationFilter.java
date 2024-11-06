@@ -39,9 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String token = jwtTokenProvider.resolveToken(request);
-            // 로그아웃이 된 토큰으로 접근 시도할 때
             if (token != null && redisUtil.hasKeyBlackList(token)) {
-                // TODO 에러처리 추가
                 throw new HomealoneException(ErrorCode.INVALID_TOKEN);
             }
             if (token != null && jwtTokenProvider.validateAccessToken(token)) {
@@ -55,13 +53,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            handleTokenException(request, response, e, "/api/token/refresh", filterChain);
+            handleTokenException(request, response, e, filterChain);
         } catch (JwtException e) {
-            setErrorResponse(request, response, e);
+            setErrorResponse(response, e);
         }
     }
 
-    private void setErrorResponse(HttpServletRequest req, HttpServletResponse res, Throwable ex) throws IOException {
+    private void setErrorResponse(HttpServletResponse res, Throwable ex) throws IOException {
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         final Map<String, Object> body = new HashMap<>();
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
@@ -72,12 +70,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         res.setStatus(HttpServletResponse.SC_OK);
     }
 
-    private void handleTokenException(HttpServletRequest request, HttpServletResponse response, Exception e, String refreshTokenPath, FilterChain filterChain) throws IOException, ServletException {
+    private void handleTokenException(HttpServletRequest request, HttpServletResponse response, Exception e, FilterChain filterChain) throws IOException, ServletException {
         String path = request.getRequestURI();
-        if (path.equals(refreshTokenPath)) {
+        if (path.equals("/api/token/refresh")) {
             filterChain.doFilter(request, response);
         } else {
-            setErrorResponse(request, response, e);
+            setErrorResponse(response, e);
         }
     }
 }
