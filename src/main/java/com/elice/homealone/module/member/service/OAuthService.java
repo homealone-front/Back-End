@@ -61,6 +61,7 @@ public class OAuthService {
         return signupOrLogin(member, response);
     }
 
+    //TODO 전략 패턴 정의해서 나눠보기..?
     private String requestAccessToken(String platform, String code) {
         String tokenRequestUrl;
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -77,6 +78,9 @@ public class OAuthService {
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        System.out.println("Token Request URL: " + tokenRequestUrl);
+        System.out.println("Request Body: " + request.getBody());
 
         ResponseEntity<String> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, request, String.class);
 
@@ -106,18 +110,26 @@ public class OAuthService {
         System.out.println("response"+response);
 
         ObjectMapper objectMapper = new ObjectMapper();
+        String email;
+        String name;
+        String profileImageUrl;
         try {
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
             // 플랫폼별로 JSON 구조가 다를 수 있으므로, 플랫폼에 따라 JSON 접근 경로를 다르게 설정합니다.
             JsonNode responseNode;
             if ("naver".equals(platform.toLowerCase())) {
                 responseNode = jsonNode.path("response");
+                email = responseNode.has("email") ? responseNode.get("email").asText() : null;
+                name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
+                profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : null;
             } else {
-                responseNode = jsonNode;
+                responseNode = jsonNode.path("kakao_account");
+                email = responseNode.has("email") ? responseNode.get("email").asText() : null;
+
+                responseNode = responseNode.path("properties");
+                name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
+                profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : null;
             }
-            String email = responseNode.has("email") ? responseNode.get("email").asText() : null;
-            String name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
-            String profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : null;
 
             return Member.builder()
                     .email(email)
