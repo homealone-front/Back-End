@@ -13,13 +13,12 @@ public class GoogleProperties {
     private String clientSecret;
     private String redirectUri;
 
-    public String getTokenRequestURL(String code) {
+    public String getTokenRequestURL() {
         return UriComponentsBuilder.fromHttpUrl(requestTokenUri)
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", clientId)
                 .queryParam("client_secret", clientSecret)
                 .queryParam("redirect_uri", redirectUri)
-                .queryParam("code", code)
                 .toUriString();
     }
 }

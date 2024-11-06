@@ -69,15 +69,9 @@ public class OAuthService {
 
         // 플랫폼 별  AccessToken 발급 요청
         switch (platform.toLowerCase()) {
-            case "naver" -> {
-                tokenRequestUrl = naverProperties.getTokenRequestURL();
-            }
-            case "kakao" -> {
-                tokenRequestUrl = kakaoProperties.getTokenRequestURL(code);
-            }
-            case "google" -> {
-                tokenRequestUrl = googleProperties.getTokenRequestURL(code);
-            }
+            case "naver" -> tokenRequestUrl = naverProperties.getTokenRequestURL();
+            case "kakao" -> tokenRequestUrl = kakaoProperties.getTokenRequestURL();
+            case "google" -> tokenRequestUrl = googleProperties.getTokenRequestURL();
             default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
         }
         params.add("code", code);
@@ -109,19 +103,27 @@ public class OAuthService {
 
         HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, String.class);
+        System.out.println("response"+response);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            // 여기서 JSON 응답을 파싱하여 Member 객체에 필요한 정보를 추출합니다.
-            String email = jsonNode.get("email").asText();
-            String name = jsonNode.has("name") ? jsonNode.get("name").asText() : null;
-            String profileImageUrl = jsonNode.has("picture") ? jsonNode.get("picture").asText() : null;
+            // 플랫폼별로 JSON 구조가 다를 수 있으므로, 플랫폼에 따라 JSON 접근 경로를 다르게 설정합니다.
+            JsonNode responseNode;
+            if ("naver".equals(platform.toLowerCase())) {
+                responseNode = jsonNode.path("response");
+            } else {
+                responseNode = jsonNode;
+            }
+            String email = responseNode.has("email") ? responseNode.get("email").asText() : null;
+            String name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
+            String profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : null;
 
             return Member.builder()
                     .email(email)
                     .name(name)
                     .imageUrl(profileImageUrl)
+                    .password("OAUTH2.0!") //TODO 해시함수로 업데이트?
                     .build();
 
         } catch (JsonProcessingException e) {
@@ -182,10 +184,8 @@ public class OAuthService {
 
 
 
-
     public Member getNaverUserInfo(String accessToken) {
         NaverUserResponse.NaverUserDetail profile = toRequestProfile(accessToken);
-
         return Member.builder()
                 .name(profile.getNickname())
                 .email(profile.getEmail())
