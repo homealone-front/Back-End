@@ -3,6 +3,7 @@ package com.elice.homealone.global.firebase;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.firebase.cloud.StorageClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URLDecoder;
@@ -11,9 +12,12 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class FirebaseStorageService {
 
+    @Value("${firebase.key-path}")
+    private String firebaseKeyPath;
+
     public void deleteImage(String fileName) {
         Storage storage = StorageClient.getInstance().bucket().getStorage();
-        BlobId blobId = BlobId.of("homealone-adce9.appspot.com", "images/" + fileName);
+        BlobId blobId = BlobId.of(firebaseKeyPath, "images/" + fileName);
         storage.delete(blobId);
     }
 
@@ -25,7 +29,7 @@ public class FirebaseStorageService {
                 fileName = fileName.substring(0, fileName.indexOf('?'));
             }
 
-            BlobId blobId = BlobId.of("homealone-adce9.appspot.com", fileName);  //blodId생성
+            BlobId blobId = BlobId.of(firebaseKeyPath, fileName);  //blodId생성
             Storage storage = StorageClient.getInstance().bucket().getStorage();
             boolean deleted = storage.delete(blobId);  //스토리지에서 blodId제거
             if (deleted) {
