@@ -27,7 +27,7 @@ public class NaverOAuthStrategy implements OAuthStrategy {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        tokenRequestUrl = naverProperties.getTokenRequestURL(); //다른 부분
+        tokenRequestUrl = naverProperties.getTokenRequestURL(); //여기만 다른 부분
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
@@ -59,7 +59,6 @@ public class NaverOAuthStrategy implements OAuthStrategy {
         String profileImageUrl;
         try {
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            // 플랫폼별로 JSON 구조가 다를 수 있으므로, 플랫폼에 따라 JSON 접근 경로를 다르게 설정합니다.
             JsonNode responseNode;
 
             //다른부분 시작
