@@ -49,7 +49,6 @@ public class RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final ScrapService scrapService;
-    private final MemberService memberService;
 
 
     // 레시피 등록
