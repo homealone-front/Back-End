@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(HomealoneException.class)
     public ResponseEntity<Response.ErrorResponse> handleHomealoneException(HomealoneException ex) {
         ErrorCode errorCode = ex.getErrorCode();
