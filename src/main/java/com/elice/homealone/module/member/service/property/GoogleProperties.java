@@ -1,14 +1,13 @@
-package com.elice.homealone.global.oauth;
-
+package com.elice.homealone.module.member.service.property;
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.util.UriComponentsBuilder;
+        import org.springframework.boot.context.properties.ConfigurationProperties;
+        import org.springframework.context.annotation.Configuration;
+        import org.springframework.web.util.UriComponentsBuilder;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "naver")
-public class NaverProperties {
+@ConfigurationProperties(prefix = "google")
+public class GoogleProperties {
     private String requestTokenUri;
     private String clientId;
     private String clientSecret;

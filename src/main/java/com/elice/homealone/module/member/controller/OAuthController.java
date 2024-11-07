@@ -14,27 +14,36 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-@CrossOrigin(origins = "https://home-alone.site/")
-@Tag(name = "AuthController", description = "OAUTH2.0 인증 관리 API")
+@Tag(name = "OAuthController", description = "OAUTH2.0 인증 관리 API")
 public class OAuthController {
     private final OAuthService oAuthService;
     @Operation(summary = "소셜 로그인 페이지 리다이렉트")
     @GetMapping("/{platform}")
-    public void OAuth2LoginRedirect(@PathVariable String platform, HttpServletResponse response) throws IOException {
+    public String OAuth2LoginRedirect(@PathVariable String platform, HttpServletResponse response) throws IOException {
         String redirectUrl = oAuthService.getRedirectUri(platform);
-        response.sendRedirect(redirectUrl);
+        return redirectUrl;
     }
     @Operation(summary = "소셜 로그인 콜백 (code 수신 및 accessToken 발급)")
-    @GetMapping("/{platform}/callback")
-    public String String (@PathVariable String platform, @RequestParam String code, HttpServletResponse response){
+    @GetMapping("/{platform}/token")
+    public String String (@PathVariable String platform, @RequestBody Map<String, Object> requestBody, HttpServletResponse response){
+        String code = (String) requestBody.get("code");
         TokenDto tokenDto = oAuthService.processOAuthLogin(platform, code, response);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Authorization", tokenDto.getAccessToken());
         return tokenDto.getAccessToken();
     }
+//    @Operation(summary = "소셜 로그인 콜백 (code 수신 및 accessToken 발급)")
+//    @GetMapping("/{platform}/callback")
+//    public String String (@PathVariable String platform, @RequestParam String code, HttpServletResponse response){
+//        TokenDto tokenDto = oAuthService.processOAuthLogin(platform, code, response);
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.set("Authorization", tokenDto.getAccessToken());
+//        return tokenDto.getAccessToken();
+//    }
 }

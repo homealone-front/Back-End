@@ -1,4 +1,4 @@
-package com.elice.homealone.global.oauth;
+package com.elice.homealone.module.member.service.property;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -51,6 +51,7 @@ public class RecipeService {
     private final ScrapService scrapService;
     private final CommentService commentService;
 
+
     // 레시피 등록
     @Transactional
     public RecipeResponseDto createRecipe(Member member, RecipeRequestDto requestDto) {

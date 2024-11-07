@@ -42,6 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (token != null && redisUtil.hasKeyBlackList(token)) {
                 throw new HomealoneException(ErrorCode.INVALID_TOKEN);
             }
+            // 유효한 token인 경우
             if (token != null && jwtTokenProvider.validateAccessToken(token)) {
                 String email = jwtTokenProvider.getEmail(token);
                 Member member = (Member) userDetailsService.loadUserByUsername(email);
