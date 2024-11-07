@@ -2,13 +2,10 @@ package com.elice.homealone.module.member.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
-import com.elice.homealone.global.oauth.GoogleProperties;
-import com.elice.homealone.global.oauth.KakaoProperties;
-import com.elice.homealone.global.oauth.NaverProperties;
+import com.elice.homealone.module.member.service.property.GoogleProperties;
+import com.elice.homealone.module.member.service.property.KakaoProperties;
+import com.elice.homealone.module.member.service.property.NaverProperties;
 import com.elice.homealone.module.member.dto.TokenDto;
-import com.elice.homealone.module.member.dto.response.KakaoUserResponse;
-import com.elice.homealone.module.member.dto.response.NaverTokenResponse;
-import com.elice.homealone.module.member.dto.response.NaverUserResponse;
 import com.elice.homealone.module.member.entity.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -70,15 +67,12 @@ public class OAuthService {
         Member member = getUserInfo(platform, accessToken);
         return signupOrLogin(member, response);
     }
-
-    //TODO 템플릿 메소드 패턴 정의해서 나눠보기..?
     private String requestAccessToken(String platform, String code) {
         String tokenRequestUrl;
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        // 플랫폼 별  AccessToken 발급 요청
         switch (platform.toLowerCase()) {
             case "naver" -> tokenRequestUrl = naverProperties.getTokenRequestURL();
             case "kakao" -> tokenRequestUrl = kakaoProperties.getTokenRequestURL();
@@ -88,13 +82,10 @@ public class OAuthService {
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-
         System.out.println("Token Request URL: " + tokenRequestUrl);
         System.out.println("Request Body: " + request.getBody());
-
         ResponseEntity<String> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, request, String.class);
 
-        // accessToken 파싱
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readTree(response.getBody()).get("access_token").asText();
@@ -102,7 +93,6 @@ public class OAuthService {
             throw new RuntimeException(e);
         }
     }
-
     public Member getUserInfo(String platform, String accessToken) {
         String userInfoUrl;
         HttpHeaders headers = new HttpHeaders();
