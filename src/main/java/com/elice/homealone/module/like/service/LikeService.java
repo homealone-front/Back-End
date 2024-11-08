@@ -12,6 +12,7 @@ import com.elice.homealone.module.member.service.MemberService;
 import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.post.sevice.PostService;
 
+import com.elice.homealone.module.recipe.entity.Recipe;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -98,4 +99,7 @@ public class LikeService {
     }
 
 
+    public void deleteLikeByPost(Post post) {
+        likeRepository.deleteLikeByPost(post);
+    }
 }

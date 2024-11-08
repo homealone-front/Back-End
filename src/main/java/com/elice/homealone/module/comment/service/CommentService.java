@@ -15,6 +15,7 @@ import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.post.sevice.CommonPostService;
 import com.elice.homealone.module.post.sevice.PostService;
 
+import com.elice.homealone.module.recipe.entity.Recipe;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -116,5 +117,9 @@ public class CommentService {
             resDto.setPostType(post.getType());
         }
         return resDtos;
+    }
+
+    public void deleteCommentByRecipe(Recipe recipe) {
+        commentRepository.deleteCommentByPost(recipe);
     }
 }

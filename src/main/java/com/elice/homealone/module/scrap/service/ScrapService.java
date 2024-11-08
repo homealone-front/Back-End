@@ -104,4 +104,8 @@ public class ScrapService {
 
         return scraps;
     }
+
+    public void deleteScrapByPost(Post post){
+        scrapRepository.deleteScrapByPost(post);
+    }
 }
