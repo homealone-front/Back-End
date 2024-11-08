@@ -131,6 +131,7 @@ public class OAuthService {
                 responseNode = jsonNode.path("profile");
                 name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
                 profileImageUrl = responseNode.has("profile_image_url") ? responseNode.get("profile_image_url").asText() : null;
+
             }
             return Member.builder()
                     .email(email)
