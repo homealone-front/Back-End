@@ -128,7 +128,7 @@ public class OAuthService {
             } else {
                 responseNode = jsonNode.path("kakao_account");
                 email = responseNode.has("email") ? responseNode.get("email").asText() : null;
-                responseNode = jsonNode.path("profile");
+                responseNode = responseNode.path("profile");
                 name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
                 profileImageUrl = responseNode.has("profile_image_url") ? responseNode.get("profile_image_url").asText() : null;
 
