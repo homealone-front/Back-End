@@ -27,10 +27,13 @@ public class NaverOAuthStrategy implements OAuthStrategy {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        tokenRequestUrl = naverProperties.getTokenRequestURL(); //여기만 다른 부분
+        tokenRequestUrl = naverProperties.getTokenRequestURL();
+
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+        System.out.println("Token Request URL: " + tokenRequestUrl);
+        System.out.println("Request Body: " + request.getBody());
         ResponseEntity<String> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, request, String.class);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -47,32 +50,26 @@ public class NaverOAuthStrategy implements OAuthStrategy {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
 
-        userInfoUrl = "https://openapi.naver.com/v1/nid/me"; //다른 부분
+        userInfoUrl = naverProperties.getTokenRequestURL();
 
         HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, String.class);
         System.out.println("response"+response);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String email;
-        String name;
-        String profileImageUrl;
+
         try {
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            JsonNode responseNode;
-
-            //다른부분 시작
-            responseNode = jsonNode.path("response");
-            email = responseNode.has("email") ? responseNode.get("email").asText() : null;
-            name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
-            profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : null;
-            //다른부분 끝
+            JsonNode responseNode = jsonNode.path("response");
+            String email = responseNode.get("email").asText();
+            String name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : email;
+            String profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : "";
 
             return Member.builder()
                     .email(email)
                     .name(name)
                     .imageUrl(profileImageUrl)
-                    .password("OAUTH2.0!")
+                    .password("OAUTH2.0!") //TODO 해시함수로 업데이트?
                     .build();
 
         } catch (JsonProcessingException e) {

@@ -113,26 +113,35 @@ public class OAuthService {
         System.out.println("response"+response);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String email;
-        String name;
-        String profileImageUrl;
+
         try {
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            // 플랫폼별로 JSON 구조가 다를 수 있으므로, 플랫폼에 따라 JSON 접근 경로를 다르게 설정합니다.
             JsonNode responseNode = jsonNode;
-            if ("naver".equals(platform.toLowerCase())) {
-                responseNode = jsonNode.path("response");
-                email = responseNode.has("email") ? responseNode.get("email").asText() : null;
-                name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
-                profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : null;
-            } else {
-                responseNode = jsonNode.path("kakao_account");
-                email = responseNode.has("email") ? responseNode.get("email").asText() : null;
-                responseNode = responseNode.path("profile");
-                name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
-                profileImageUrl = responseNode.has("profile_image_url") ? responseNode.get("profile_image_url").asText() : null;
+            String email = "";
+            String name = "";
+            String profileImageUrl = "";
+            switch(platform.toLowerCase()){
+                case "naver" -> {
+                    responseNode = jsonNode.path("response");
+                    email = responseNode.get("email").asText();
+                    name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : email;
+                    profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : "";
+                }
+                case "kakao" -> {
+                    responseNode = jsonNode.path("kakao_account");
+                    email = responseNode.get("email").asText();
+                    responseNode = responseNode.path("profile");
+                    name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : email;
+                    profileImageUrl = responseNode.has("profile_image_url") ? responseNode.get("profile_image_url").asText() : "";
 
+                }
+                case "google" -> {
+                    email = jsonNode.get("email").asText();
+                    name = jsonNode.get("name").asText();
+                    profileImageUrl = jsonNode.get("picture").asText();
+                }
             }
+
             return Member.builder()
                     .email(email)
                     .name(name)
