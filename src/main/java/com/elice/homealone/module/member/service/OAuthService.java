@@ -119,7 +119,7 @@ public class OAuthService {
         try {
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
             // 플랫폼별로 JSON 구조가 다를 수 있으므로, 플랫폼에 따라 JSON 접근 경로를 다르게 설정합니다.
-            JsonNode responseNode;
+            JsonNode responseNode = jsonNode;
             if ("naver".equals(platform.toLowerCase())) {
                 responseNode = jsonNode.path("response");
                 email = responseNode.has("email") ? responseNode.get("email").asText() : null;
@@ -128,12 +128,11 @@ public class OAuthService {
             } else {
                 responseNode = jsonNode.path("kakao_account");
                 email = responseNode.has("email") ? responseNode.get("email").asText() : null;
-
-                responseNode = responseNode.path("properties");
+                responseNode = responseNode.path("profile");
                 name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : null;
-                profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : null;
-            }
+                profileImageUrl = responseNode.has("profile_image_url") ? responseNode.get("profile_image_url").asText() : null;
 
+            }
             return Member.builder()
                     .email(email)
                     .name(name)
