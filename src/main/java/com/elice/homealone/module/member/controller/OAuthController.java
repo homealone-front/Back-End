@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,11 +29,9 @@ public class OAuthController {
     }
     @Operation(summary = "소셜 로그인 콜백 (code 수신 및 accessToken 발급)")
     @PostMapping("/{platform}/token")
-    public String getAccessToken (@PathVariable String platform, @RequestBody Map<String, Object> requestBody, HttpServletResponse response){
+    public ResponseEntity<TokenDto> getAccessToken (@PathVariable String platform, @RequestBody Map<String, Object> requestBody, HttpServletResponse response){
         String code = (String) requestBody.get("code");
         TokenDto tokenDto = oAuthService.processOAuthLogin(platform, code, response);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", tokenDto.getAccessToken());
-        return tokenDto.getAccessToken();
+        return new ResponseEntity<>(tokenDto, HttpStatus.OK);
     }
 }
