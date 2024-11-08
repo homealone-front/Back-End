@@ -6,12 +6,14 @@
     <td style="width: 14%; text-align: center;"><img src="src/main/resources/static/img/gyj.jpg" width="80" height="80"></td>
   </tr>
   <tr>
-    <td style="width: 14%; text-align: center;"><a href="https://github.com/mylazysundaycat"><strong>BE 팀원 권예지</strong></a></td>
+    <td style="width: 14%; text-align: center;"><a href="https://avatars.githubusercontent.com/u/101305955?v=4"><strong>BE 팀원 권예지</strong></a></td>
   </tr>
 </table>
 
 ✔️권예지
 - AWS EC2와 RDS를 사용해 기존 서버의 데이터를 새로운 서버로 migration
+- Jenkins를 이용한 CI/CD 재구축
+- OAuth 2.0 인증방식 코드 리팩토링
 
 ## Former Team Members
 
@@ -28,7 +30,7 @@
   <tr>
     <td style="width: 14%; text-align: center;"><a href=""><strong>BE 팀장 안수민</strong></a></td>
     <td style="width: 14%; text-align: center;"><a href=""><strong>BE 팀원 유기원</strong></a></td>
-    <td style="width: 14%; text-align: center;"><a href="https://github.com/mylazysundaycat"><strong>BE 팀원 권예지</strong></a></td>
+    <td style="width: 14%; text-align: center;"><a href="https://avatars.githubusercontent.com/u/101305955?v=4"><strong>BE 팀원 권예지</strong></a></td>
     <td style="width: 14%; text-align: center;"><a href=""><strong>BE 팀원 장성규</strong></a></td>
     <td style="width: 14%; text-align: center;"><a href=""><strong>BE 팀원 홍유나</strong></a></td>
     <td style="width: 14%; text-align: center;"><a href=""><strong>BE 팀원 고민성</strong></a></td>
