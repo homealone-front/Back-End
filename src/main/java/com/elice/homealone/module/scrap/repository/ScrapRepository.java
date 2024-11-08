@@ -24,4 +24,6 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
 
     @Query("SELECT s FROM Scrap s JOIN s.post p WHERE s.member.id = :memberId AND p.type = :postType")
     List<Scrap> findByMemberIdAndPostType(Long memberId, Post.Type postType);
+
+    void deleteScrapByPost(Post post);
 }

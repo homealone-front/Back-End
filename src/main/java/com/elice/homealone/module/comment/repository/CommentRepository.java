@@ -1,6 +1,8 @@
 package com.elice.homealone.module.comment.repository;
 
 import com.elice.homealone.module.comment.entity.Comment;
+import com.elice.homealone.module.post.entity.Post;
+import com.elice.homealone.module.recipe.entity.Recipe;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -15,4 +17,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
     List<Comment> findByPostIdOrderByCreatedAtDesc(Long postId);
 
     Page<Comment> findByMemberIdOrderByPostIdDescCreatedAtDesc(Long memberId, Pageable pageable);
+
+    void deleteCommentByPost(Post post);
 }

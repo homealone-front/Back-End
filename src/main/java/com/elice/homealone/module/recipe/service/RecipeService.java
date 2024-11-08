@@ -2,6 +2,7 @@ package com.elice.homealone.module.recipe.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.module.comment.service.CommentService;
 import com.elice.homealone.module.like.service.LikeService;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.service.AuthService;
@@ -46,9 +47,9 @@ public class RecipeService {
     private final PostTagService postTagService;
 
     private final LikeService likeService;
-
     private final RecipeRepository recipeRepository;
     private final ScrapService scrapService;
+    private final CommentService commentService;
 
 
     // 레시피 등록
@@ -166,6 +167,9 @@ public class RecipeService {
 
         Recipe recipe = recipeRepository.findById(id)
             .orElseThrow(()-> new HomealoneException(ErrorCode.RECIPE_NOT_FOUND));
+        commentService.deleteCommentByRecipe(recipe);
+        scrapService.deleteScrapByPost(recipe);
+        likeService.deleteLikeByPost(recipe);
         postTagService.deletePostTagByRecipe(recipe);
         recipeImageService.deleteImageByRecipe(recipe);
         recipeIngredientService.deleteRecipeIngredientByRecipe(recipe);
