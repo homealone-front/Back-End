@@ -31,7 +31,6 @@ public class Response {
         }
     }
 
-
     @Getter
     @AllArgsConstructor
     public static class ErrorResponse {
