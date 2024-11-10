@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,10 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final RedisUtil redisUtil;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService, RedisUtil redisUtil) {
+    private final HandlerExceptionResolver handlerExceptionResolver;
+
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService, RedisUtil redisUtil, HandlerExceptionResolver handlerExceptionResolver) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
         this.redisUtil = redisUtil;
+        this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
@@ -76,7 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (path.equals("/api/token/refresh")) {
             filterChain.doFilter(request, response);
         } else {
-            setErrorResponse(response, e);
+            handlerExceptionResolver.resolveException(request, response, null, e);
         }
     }
 }

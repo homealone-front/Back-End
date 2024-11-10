@@ -22,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final RedisUtil redisUtil;
     private final WebConfig webConfig;
+    private final HandlerExceptionResolver handlerExceptionResolver;
     
     private final String[] admin = {
             "/api/admin/**"
@@ -46,7 +48,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService, redisUtil);
+        return new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService, redisUtil, handlerExceptionResolver);
     }
 
     @Bean
@@ -74,7 +76,7 @@ public class SecurityConfig {
                                             response.getWriter().flush();
                                         })
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil, handlerExceptionResolver), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
