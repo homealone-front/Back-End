@@ -7,3 +7,4 @@ public interface OAuthStrategy {
 
     Member getUserInfo(String accessToken);
 }
+
