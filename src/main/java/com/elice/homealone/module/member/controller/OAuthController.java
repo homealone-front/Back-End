@@ -21,6 +21,7 @@ import java.util.Map;
 @RequestMapping("/api")
 @Tag(name = "OAuthController", description = "OAUTH2.0 인증 관리 API")
 public class OAuthController {
+    //테스트
     private final OAuthService oAuthService;
     @Operation(summary = "소셜 로그인 페이지 리다이렉트")
     @GetMapping("/{platform}")
