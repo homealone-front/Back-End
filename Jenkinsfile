@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'homealone', branch: 'test', url: 'https://kdt-gitlab.elice.io/cloud_track/class_02/web_project3/team07/team7-back.git'
+                 git credentialsId: 'homealone', branch: 'test', url: 'https://github.com/homealone-front/backend'
             }
         }
         stage('Build') {
@@ -22,9 +22,8 @@ pipeline {
         }
         stage("Deploy to VM") {
           steps {
-            // vm에 배포하는 단계
             script {
-              sshagent(credentials: ['homealonekey']) {
+              sshagent(credentials: ['homealone-ec2']) {
                 sh 'scp -o StrictHostKeyChecking=no -r build/libs/* elice@team07-final:/home/elice/Back'
               }
             }
