@@ -24,11 +24,12 @@ pipeline {
           steps {
             script {
               sshagent(credentials: ['homealone-ec2']) {
-                sh 'scp -o StrictHostKeyChecking=no -r build/libs/* elice@team07-final:/home/elice/Back'
+                sh 'scp -o StrictHostKeyChecking=no -r build/libs/* ubuntu@home-alone.site:/home/ubuntu/backend'
               }
             }
           }
         }
+
         stage("Build Docker Image") {
             steps {
                 script {
