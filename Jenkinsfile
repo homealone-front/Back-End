@@ -1,10 +1,11 @@
-pipeline {
+ pipeline {
     agent any
-
     stages {
         stage('Checkout') {
             steps {
-                 git credentialsId: 'homealone', branch: 'test', url: 'https://github.com/homealone-front/backend'
+                 git credentialsId: 'gitub-access-token',
+                 branch: 'test',
+                 url: 'https://github.com/homealone-front/backend'
             }
         }
         stage('Build') {
