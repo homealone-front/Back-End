@@ -1,4 +1,4 @@
- pipeline {
+cd ~cat  pipeline {
     agent any
     stages {
         stage('Checkout') {
@@ -35,7 +35,7 @@
             steps {
                 script {
                     // Docker 이미지 빌드
-                    sh 'docker build -t homealone .'
+                    sh 'docker build --no-cache -t homealone .'
                 }
             }
         }

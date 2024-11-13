@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         final ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(res.getOutputStream(), body);
-        res.setStatus(HttpServletResponse.SC_OK);
+        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     private void handleTokenException(HttpServletRequest request, HttpServletResponse response, Exception e, FilterChain filterChain) throws IOException, ServletException {
