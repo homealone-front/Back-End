@@ -74,13 +74,13 @@ public class OAuthService {
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
         tokenRequestUrl = getTokenRequestUrl(platform);
-
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         System.out.println("Token Request URL: " + tokenRequestUrl);
         System.out.println("Request Body: " + request.getBody());
         ResponseEntity<String> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, request, String.class);
+        System.out.println("토큰 요청 직후 response:"+response);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
