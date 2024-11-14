@@ -1,4 +1,4 @@
-#젠킨스 테스트
+# 웹훅 테스트
 # 베이스 이미지
 FROM openjdk:17-jdk-alpine
 
