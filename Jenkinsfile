@@ -1,4 +1,4 @@
-cd ~cat  pipeline {
+pipeline {
     agent any
     stages {
         stage('Checkout') {
