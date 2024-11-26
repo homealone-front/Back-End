@@ -43,24 +43,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String token = jwtTokenProvider.resolveToken(request);
+
             if (token != null && redisUtil.hasKeyBlackList(token)) {
                 throw new HomealoneException(ErrorCode.INVALID_TOKEN);
             }
-            // 유효한 token인 경우
+
             if (token != null && jwtTokenProvider.validateAccessToken(token)) {
                 String email = jwtTokenProvider.getEmail(token);
                 Member member = (Member) userDetailsService.loadUserByUsername(email);
+
                 if (member != null) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member, null, member.getAuthorities());
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(member, null, member.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
-            handleTokenException(request, response, e, filterChain);
-        } catch (JwtException e) {
-            setErrorResponse(response, e, "exception");
+        } catch (Exception ex) {
+            // HandlerExceptionResolver로 예외 처리
+            handlerExceptionResolver.resolveException(request, response, null, ex);
         }
     }
 

@@ -1,9 +1,9 @@
 package com.elice.homealone.global.config;
 
+import com.elice.homealone.global.exception.CustomAuthenticationEntryPoint;
 import com.elice.homealone.global.jwt.JwtAuthenticationFilter;
 import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.global.redis.RedisUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -34,11 +34,11 @@ public class SecurityConfig {
     private final RedisUtil redisUtil;
     private final WebConfig webConfig;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint; //JWT 추가
     
     private final String[] admin = {
             "/api/admin/**"
     };
-    //임시로 모든 회원정보 모두 허용
     private final String[] member = {
             "/**"
     };
@@ -57,26 +57,27 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(webConfig.corsConfigurationSource())) // CORS 설정 적용
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)) //H2
-                .formLogin(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        auth -> auth.requestMatchers(admin).hasRole("ADMIN")
-                                    .requestMatchers(member).permitAll()
-                                    .requestMatchers(resource).permitAll()
-                                    .requestMatchers("/static/index.html", "/api/**", "/**").permitAll()
-                                    .requestMatchers("/api/usedtrade").permitAll()
-                                    .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                                    .anyRequest().permitAll() //임시설정
-                )
-                .logout(logout -> logout.logoutUrl("/logout")
-                                        .invalidateHttpSession(true)
-                                        .deleteCookies("JSESSIONID")
-                                        .logoutSuccessHandler((request, response, authentication) -> {
-                                            response.setStatus(HttpServletResponse.SC_OK);
-                                            response.getWriter().flush();
-                                        })
-                )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil, handlerExceptionResolver), UsernamePasswordAuthenticationFilter.class);
+            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)) //H2
+            .formLogin(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(
+                    auth -> auth.requestMatchers(admin).hasRole("ADMIN")
+                            .requestMatchers(member).permitAll()
+                            .requestMatchers(resource).permitAll()
+                            .requestMatchers("/static/index.html", "/api/**", "/**").permitAll()
+                            .requestMatchers("/api/usedtrade").permitAll()
+                            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                            .anyRequest().permitAll() //임시설정
+            ).logout(logout -> logout.logoutUrl("/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.getWriter().flush();
+                        }))
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+                    .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) //인증 실패
+            )
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil, handlerExceptionResolver), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

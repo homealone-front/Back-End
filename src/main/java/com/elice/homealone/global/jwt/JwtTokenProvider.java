@@ -65,7 +65,7 @@ public class JwtTokenProvider {
             String email = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
             return true;
         } catch (ExpiredJwtException e) {
-            throw e;
+            throw new HomealoneException(ErrorCode.EXPIRED_TOKEN);
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
             throw new HomealoneException(ErrorCode.INVALID_TOKEN);
         }
