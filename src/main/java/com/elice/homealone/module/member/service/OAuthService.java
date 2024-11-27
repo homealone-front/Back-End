@@ -7,6 +7,7 @@ import com.elice.homealone.module.member.service.property.KakaoProperties;
 import com.elice.homealone.module.member.service.property.NaverProperties;
 import com.elice.homealone.module.member.dto.TokenDto;
 import com.elice.homealone.module.member.entity.Member;
+import com.elice.homealone.module.member.service.template.OAuthStrategy;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,9 +23,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
+    private final Map<String, OAuthStrategy> strategies;
     private final RestTemplate restTemplate = new RestTemplate();
     private final NaverProperties naverProperties;
     private final KakaoProperties kakaoProperties;
@@ -63,8 +67,12 @@ public class OAuthService {
      * @return TokneDto
      */
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
-        String accessToken = requestAccessToken(platform, code);
-        Member member = getUserInfo(platform, accessToken);
+        OAuthStrategy strategy = strategies.get(platform.toLowerCase());
+        if (strategy == null) {
+            throw new HomealoneException(ErrorCode.BAD_REQUEST);
+        }
+        String accessToken = strategy.requestAccessToken(code);
+        Member member = strategy.getUserInfo(accessToken);
         return signupOrLogin(member, response);
     }
     private String requestAccessToken(String platform, String code) {
