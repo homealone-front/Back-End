@@ -67,26 +67,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setErrorResponse(HttpServletResponse res, Throwable ex, String message) throws IOException {
-        String errorMessage = ex.getMessage();
-        if(message.equals("EXPIRED_REFRESH_TOKEN")) errorMessage = message;
-        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        final Map<String, Object> body = new HashMap<>();
-        body.put("error", "UNAUTHORIZED");
-        body.put("message", errorMessage);
-        body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(res.getOutputStream(), body);
-        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    }
-
-    private void handleTokenException(HttpServletRequest request, HttpServletResponse response, Exception e, FilterChain filterChain) throws IOException, ServletException {
-        String path = request.getRequestURI();
-        if (path.equals("/api/token/refresh")) {
-            filterChain.doFilter(request, response);
-        } else {
-            setErrorResponse(response, e, "EXPIRED_REFRESH_TOKEN");
-        }
-    }
 }
 
