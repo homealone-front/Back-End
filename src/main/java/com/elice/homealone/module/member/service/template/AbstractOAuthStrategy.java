@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public abstract class AbstractOAuthStrategy implements OAuthStrategy {
     protected RestTemplate restTemplate = new RestTemplate();
-    // 플랫폼별로 다른 추상 메소드
     protected abstract String getTokenRequestUrl();
     protected abstract String getUserInfoUrl();
     protected abstract Member parseUserInfo(String responseBody) throws JsonProcessingException;
@@ -47,7 +46,6 @@ public abstract class AbstractOAuthStrategy implements OAuthStrategy {
         String userInfoUrl = getUserInfoUrl();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
-
         HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, String.class);
 
