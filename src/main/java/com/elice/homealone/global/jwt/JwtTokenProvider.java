@@ -85,6 +85,15 @@ public class JwtTokenProvider {
         }
     }
 
+    public boolean isToken(String token) {
+        try{
+            String email = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+            return true;
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new HomealoneException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
     /**
      *
      * JWT 토큰으로 email 반환받는다.

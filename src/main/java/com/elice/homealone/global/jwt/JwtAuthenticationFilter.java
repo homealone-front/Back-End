@@ -39,9 +39,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain){
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException{
+
+
+
         try {
             String token = jwtTokenProvider.resolveToken(request);
+            String path = request.getRequestURI();
+            if ("/api/token/refresh".equals(path)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             if (token != null && redisUtil.hasKeyBlackList(token)) {
                 throw new HomealoneException(ErrorCode.INVALID_TOKEN);

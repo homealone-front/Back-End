@@ -20,7 +20,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          org.springframework.security.core.AuthenticationException authException) throws IOException {
         String path = request.getRequestURI();
-        if (path.equals("/api/token/refresh")) return;
+        if (path.equals("/api/token/refresh")) {return;}
         Throwable cause = authException.getCause();
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
