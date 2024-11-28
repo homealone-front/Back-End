@@ -3,9 +3,7 @@ package com.elice.homealone.module.member.service.template;
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.property.NaverProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -18,12 +16,12 @@ import org.springframework.web.client.RestTemplate;
 
 
 @RequiredArgsConstructor
-public abstract class AbstractOAuthStrategy implements OAuthStrategy {
+public abstract class AbstractOAuthTemplate {
     protected RestTemplate restTemplate = new RestTemplate();
     protected abstract String getTokenRequestUrl();
     protected abstract String getUserInfoUrl();
     protected abstract Member parseUserInfo(String responseBody) throws JsonProcessingException;
-    @Override
+
     public String requestAccessToken(String code){
         String tokenRequestUrl = getTokenRequestUrl();
         HttpHeaders headers = new HttpHeaders();
@@ -41,7 +39,7 @@ public abstract class AbstractOAuthStrategy implements OAuthStrategy {
             throw new RuntimeException(e);
         }
     }
-    @Override
+
     public Member getUserInfo(String accessToken) {
         String userInfoUrl = getUserInfoUrl();
         HttpHeaders headers = new HttpHeaders();

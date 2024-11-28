@@ -1,23 +1,14 @@
 package com.elice.homealone.module.member.service.template;
 
-import com.elice.homealone.global.exception.ErrorCode;
-import com.elice.homealone.global.exception.HomealoneException;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.service.property.NaverProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 @RequiredArgsConstructor
-public class NaverOAuthStrategy extends AbstractOAuthStrategy {
+public class NaverOAuthTemplate extends AbstractOAuthTemplate {
     private final NaverProperties naverProperties;
 
     @Override
