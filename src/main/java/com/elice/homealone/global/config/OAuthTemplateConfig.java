@@ -36,11 +36,11 @@ public class OAuthTemplateConfig {
 //    }
 
     @Bean
-    public Map<String, AbstractOAuthTemplate> strategies(AbstractOAuthTemplate naverOAuthStrategy) {
-        Map<String, AbstractOAuthTemplate> strategies = new HashMap<>();
-        strategies.put("naver", naverOAuthStrategy);
+    public Map<String, AbstractOAuthTemplate> templates(AbstractOAuthTemplate naverOAuthStrategy) {
+        Map<String, AbstractOAuthTemplate> templates = new HashMap<>();
+        templates.put("naver", naverOAuthStrategy);
 //        strategies.put("kakao", kakaoOAuthStrategy);
 //        strategies.put("google", googleOAuthStrategy);
-        return strategies;
+        return templates;
     }
 }

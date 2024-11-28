@@ -28,7 +28,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class OAuthService {
-    private final Map<String, AbstractOAuthTemplate> strategies;
+    private final Map<String, AbstractOAuthTemplate> templates;
     private final RestTemplate restTemplate = new RestTemplate();
     private final NaverProperties naverProperties;
     private final KakaoProperties kakaoProperties;
@@ -67,12 +67,12 @@ public class OAuthService {
      * @return TokneDto
      */
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
-        AbstractOAuthTemplate strategy = strategies.get(platform.toLowerCase());
-        if (strategy == null) {
+        AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
+        if (template == null) {
             throw new HomealoneException(ErrorCode.BAD_REQUEST);
         }
-        String accessToken = strategy.requestAccessToken(code);
-        Member member = strategy.getUserInfo(accessToken);
+        String accessToken = template.requestAccessToken(code);
+        Member member = template.getUserInfo(accessToken);
         return signupOrLogin(member, response);
     }
 
