@@ -67,13 +67,16 @@ public class OAuthService {
      * @return TokneDto
      */
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
-        AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
-        if (template == null) {
-            throw new HomealoneException(ErrorCode.BAD_REQUEST);
-        }
-        String accessToken = template.requestAccessToken(code);
-        Member member = template.getUserInfo(accessToken);
+        String accessToken = requestAccessToken(platform, code);
+        Member member = getUserInfo(platform, accessToken);
         return signupOrLogin(member, response);
+//        AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
+//        if (template == null) {
+//            throw new HomealoneException(ErrorCode.BAD_REQUEST);
+//        }
+//        String accessToken = template.requestAccessToken(code);
+//        Member member = template.getUserInfo(accessToken);
+//        return signupOrLogin(member, response);
     }
 
     private String requestAccessToken(String platform, String code) {
