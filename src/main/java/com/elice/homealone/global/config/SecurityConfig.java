@@ -1,6 +1,5 @@
 package com.elice.homealone.global.config;
 
-import com.elice.homealone.global.exception.CustomAuthenticationEntryPoint;
 import com.elice.homealone.global.jwt.JwtAuthenticationFilter;
 import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.global.redis.RedisUtil;
@@ -34,7 +33,6 @@ public class SecurityConfig {
     private final RedisUtil redisUtil;
     private final WebConfig webConfig;
     private final HandlerExceptionResolver handlerExceptionResolver;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint; //JWT 추가
     
     private final String[] admin = {
             "/api/admin/**"
@@ -74,9 +72,6 @@ public class SecurityConfig {
                             response.setStatus(HttpServletResponse.SC_OK);
                             response.getWriter().flush();
                         }))
-            .exceptionHandling(exceptionHandling -> exceptionHandling
-                    .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) //인증 실패
-            )
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil, handlerExceptionResolver), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
