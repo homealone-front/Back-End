@@ -5,6 +5,7 @@ import com.elice.homealone.module.member.service.property.KakaoProperties;
 import com.elice.homealone.module.member.service.property.NaverProperties;
 
 import com.elice.homealone.module.member.service.template.AbstractOAuthTemplate;
+import com.elice.homealone.module.member.service.template.KakaoOAuthTemplate;
 import com.elice.homealone.module.member.service.template.NaverOAuthTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,22 +26,24 @@ public class OAuthTemplateConfig {
         return new NaverOAuthTemplate(naverProperties);
     }
 
+    @Bean
+    public AbstractOAuthTemplate kakaoOAuthStrategy() {
+        return new KakaoOAuthTemplate(kakaoProperties);
+    }
+
 //    @Bean
-//    public OAuthStrategy kakaoOAuthStrategy() {
-//        return new KakaoOAuthStrategy(kakaoProperties);
-//    }
-//
-//    @Bean
-//    public OAuthStrategy googleOAuthStrategy() {
-//        return new GoogleOAuthStrategy(googleProperties);
+//    public AbstractOAuthTemplate googleOAuthStrategy() {
+//        return new GoogleOAuthTemplate(googleProperties);
 //    }
 
     @Bean
-    public Map<String, AbstractOAuthTemplate> templates(AbstractOAuthTemplate naverOAuthStrategy) {
+    public Map<String, AbstractOAuthTemplate> oauthTemplates(
+            AbstractOAuthTemplate naverOAuthStrategy,
+            AbstractOAuthTemplate kakaoOAuthStrategy) {
         Map<String, AbstractOAuthTemplate> templates = new HashMap<>();
         templates.put("naver", naverOAuthStrategy);
-//        strategies.put("kakao", kakaoOAuthStrategy);
-//        strategies.put("google", googleOAuthStrategy);
+        templates.put("kakao", kakaoOAuthStrategy);
+//        templates.put("google", googleOAuthStrategy);
         return templates;
     }
 }

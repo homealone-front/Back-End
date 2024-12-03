@@ -46,6 +46,7 @@ public abstract class AbstractOAuthTemplate {
         headers.add("Authorization", "Bearer " + accessToken);
         HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, String.class);
+        System.out.println("response: "+response);
 
         try {
             return parseUserInfo(response.getBody());

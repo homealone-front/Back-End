@@ -24,6 +24,7 @@ public class NaverOAuthTemplate extends AbstractOAuthTemplate {
     @Override
     protected Member parseUserInfo(String responseBody) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
+
         JsonNode jsonNode = objectMapper.readTree(responseBody);
         JsonNode responseNode = jsonNode.path("response");
         String email = responseNode.get("email").asText();
