@@ -13,6 +13,7 @@ public class NaverProperties {
     private String clientId;
     private String clientSecret;
     private String redirectUri;
+    private String uri;
 
     public String getTokenRequestURL() {
         return UriComponentsBuilder.fromHttpUrl(requestTokenUri)

@@ -34,8 +34,6 @@ public class OAuthService {
     private final KakaoProperties kakaoProperties;
     private final GoogleProperties googleProperties;
     private final AuthService authService;
-    @Value("${naver.uri}")
-    private String NAVER_URI;
     @Value("${kakao.uri}")
     private String KAKAO_URI;
     @Value("${google.uri}")
@@ -49,7 +47,7 @@ public class OAuthService {
      */
     public String getRedirectUri(String platform) {
         String redirectUrl = switch (platform.toLowerCase()) {
-            case "naver" -> NAVER_URI;
+            case "naver" -> naverProperties.getUri();
             case "google" -> GOOGLE_URI;
             case "kakao" -> KAKAO_URI;
             default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
