@@ -3,7 +3,9 @@ package com.elice.homealone.member.service;
 import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.module.member.dto.TokenDto;
 import com.elice.homealone.module.member.dto.request.LoginRequestDto;
+import com.elice.homealone.module.member.dto.request.SignupRequestDto;
 import com.elice.homealone.module.member.entity.Member;
+import com.elice.homealone.module.member.repository.MemberRepository;
 import com.elice.homealone.module.member.service.AuthService;
 import com.elice.homealone.module.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -24,10 +29,28 @@ public class AuthServiceTest {
     @Mock
     private MemberService memberService;
     @Mock
+    private MemberRepository memberRepository;
+    @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @Test
+    @DisplayName("회원가입 성공 테스트")
+    void testSingUpSuccess() {
+        SignupRequestDto signupRequestDto = new SignupRequestDto(
+                "홍길동",
+                LocalDate.of(2001,01,01),
+                "test@homealone.site",
+                "서울시 강남구",
+                "역삼동 123번지",
+                "Qwer@1234"
+        );
+
+        Member mockMember = Member.from(signupRequestDto);
+        assertEquals(signupRequestDto.getEmail(), mockMember.getEmail());
+
+    }
 
     @Test
     @DisplayName("로그인 성공 테스트")
