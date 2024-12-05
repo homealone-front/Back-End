@@ -2,6 +2,8 @@ package com.elice.homealone.module.member.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.module.member.dto.request.LoginRequestDto;
+import com.elice.homealone.module.member.dto.request.SignupRequestDto;
 import com.elice.homealone.module.member.service.property.GoogleProperties;
 import com.elice.homealone.module.member.service.property.KakaoProperties;
 import com.elice.homealone.module.member.service.property.NaverProperties;
@@ -34,10 +36,6 @@ public class OAuthService {
     private final KakaoProperties kakaoProperties;
     private final GoogleProperties googleProperties;
     private final AuthService authService;
-    @Value("${kakao.uri}")
-    private String KAKAO_URI;
-    @Value("${google.uri}")
-    private String GOOGLE_URI;
 
 
     /**
@@ -46,13 +44,12 @@ public class OAuthService {
      * @return redirectUrl
      */
     public String getRedirectUri(String platform) {
-        String redirectUrl = switch (platform.toLowerCase()) {
+        return switch (platform.toLowerCase()) {
             case "naver" -> naverProperties.getUri();
-            case "google" -> GOOGLE_URI;
-            case "kakao" -> KAKAO_URI;
+            case "google" -> googleProperties.getUri();
+            case "kakao" -> kakaoProperties.getUri();
             default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
         };
-        return redirectUrl;
     }
 
     /**
@@ -65,16 +62,16 @@ public class OAuthService {
      * @return TokneDto
      */
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
-        String accessToken = requestAccessToken(platform, code);
-        Member member = getUserInfo(platform, accessToken);
-        return signupOrLogin(member, response);
-//        AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
-//        if (template == null) {
-//            throw new HomealoneException(ErrorCode.BAD_REQUEST);
-//        }
-//        String accessToken = template.requestAccessToken(code);
-//        Member member = template.getUserInfo(accessToken);
+//        String accessToken = requestAccessToken(platform, code);
+//        Member member = getUserInfo(platform, accessToken);
 //        return signupOrLogin(member, response);
+        AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
+        if (template == null) {
+            throw new HomealoneException(ErrorCode.BAD_REQUEST);
+        }
+        String accessToken = template.requestAccessToken(code);
+        Member member = template.getUserInfo(accessToken);
+        return signupOrLogin(member, response);
     }
 
     private String requestAccessToken(String platform, String code) {
@@ -178,12 +175,12 @@ public class OAuthService {
     public TokenDto signupOrLogin(Member member, HttpServletResponse httpServletResponse) {
         try{
             if(!authService.isEmailDuplicate(member.getEmail())){
-                authService.signUp(member.toSignupRequestDto());
+                authService.signUp(SignupRequestDto.toResponse(member));
             }
         }catch (HomealoneException e) {
 
         }
-        TokenDto tokenDto = authService.login(member.toLoginRequestDto(), httpServletResponse);
+        TokenDto tokenDto = authService.login(LoginRequestDto.toResponse(member), httpServletResponse);
         return tokenDto;
     }
 

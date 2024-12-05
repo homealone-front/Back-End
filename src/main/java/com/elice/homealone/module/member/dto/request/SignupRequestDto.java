@@ -9,9 +9,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Getter
-@Setter
-@Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class SignupRequestDto {
     private String name;
@@ -22,14 +20,8 @@ public class SignupRequestDto {
     private String firstAddress;
     private String secondAddress;
     private String password;
-    public Member toEntity() {
-        Member member = new Member();
-        member.setName(this.name);
-        member.setBirth(this.birth);
-        member.setEmail(this.email);
-        member.setFirstAddress(this.firstAddress);
-        member.setSecondAddress(this.secondAddress);
-        member.setPassword(this.password);
-        return member;
+
+    public static SignupRequestDto toResponse(Member member) {
+        return new SignupRequestDto(member.getName(), member.getBirth(), member.getEmail(), member.getFirstAddress(), member.getSecondAddress(), member.getPassword());
     }
 }

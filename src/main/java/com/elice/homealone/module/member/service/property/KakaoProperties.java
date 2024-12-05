@@ -12,6 +12,7 @@ public class KakaoProperties {
     private String requestTokenUri;
     private String clientId;
     private String redirectUri;
+    private String uri;
     public String getTokenRequestURL() {
         return UriComponentsBuilder.fromHttpUrl(requestTokenUri)
                 .queryParam("grant_type", "authorization_code")

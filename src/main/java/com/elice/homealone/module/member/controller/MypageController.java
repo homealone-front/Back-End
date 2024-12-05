@@ -41,13 +41,13 @@ public class MypageController {
     @Operation(summary = "마이페이지 정보 조회")
     @GetMapping("")
     public ResponseEntity<MemberDto> getMemberInfo() {
-        return ResponseEntity.ok(authService.getMember().toDto());
+        return ResponseEntity.ok(MemberDto.from(authService.getMember()));
     }
 
     @Operation(summary = "마이페이지 정보 수정")
     @PatchMapping("")
     public ResponseEntity<MemberDto> editMemberInfo(@RequestBody MemberDto memberDTO){
-        MemberDto changedMember = authService.editMember(memberDTO).toDto();
+        MemberDto changedMember = MemberDto.from(authService.editMember(memberDTO));
         return ResponseEntity.ok(changedMember);
     }
 

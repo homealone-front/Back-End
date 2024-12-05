@@ -1,5 +1,6 @@
 package com.elice.homealone.module.usedtrade.entity;
 
+import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.tag.dto.PostTagDto;
 import com.elice.homealone.module.tag.entity.PostTag;
@@ -61,7 +62,7 @@ public class UsedTrade extends Post {
         return UsedTradeResponseDto.builder()
                 .id(super.getId())
                 .tags(tagDtos)
-                .member(this.getMember().toDto())
+                .member(MemberDto.from(this.getMember()))
                 .title(this.getTitle())
                 .price(this.getPrice())
                 .location(this.getLocation())
@@ -85,7 +86,7 @@ public class UsedTrade extends Post {
 
         return UsedTradeResponseDto.builder()
                 .id(super.getId())
-                .member(this.getMember().toDto())
+                .member(MemberDto.from(this.getMember()))
                 .title(this.getTitle())
                 .price(this.getPrice())
                 .location(this.getLocation())

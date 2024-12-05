@@ -34,7 +34,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/member/{memberId}")
     public ResponseEntity<MemberDto> getMemberById(@PathVariable Long memberId) {
-        MemberDto memberDTO = memberService.findById(memberId).toDto();
+        MemberDto memberDTO = MemberDto.from(memberService.findById(memberId));
         return ResponseEntity.ok(memberDTO);
     }
 

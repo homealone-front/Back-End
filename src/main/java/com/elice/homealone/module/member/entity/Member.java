@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 @Setter
@@ -65,44 +65,25 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Column(name = "deleted_at", nullable = false)
     private boolean deletedAt = false;
 
-
-
     public Member(String email, String password) {
         this.email=email;
         this.password=password;
     }
-
-    public MemberDto toDto() {
-        MemberDto memberDTO = new MemberDto();
-        memberDTO.setId(this.id);
-        memberDTO.setName(this.name);
-        memberDTO.setBirth(this.birth);
-        memberDTO.setEmail(this.email);
-        memberDTO.setFirstAddress(this.firstAddress);
-        memberDTO.setSecondAddress(this.secondAddress);
-        memberDTO.setImageUrl(this.imageUrl);
-        memberDTO.setCreatedAt(this.getCreatedAt());
-        memberDTO.setModifiedAt(this.getModifiedAt());
-        return memberDTO;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public SignupRequestDto toSignupRequestDto() {
-        return SignupRequestDto.builder()
-                .name(this.name)
-                .birth(this.birth)
-                .email(this.email)
-                .firstAddress(this.firstAddress)
-                .secondAddress(this.secondAddress)
-                .password(this.password)
+    public static Member from(SignupRequestDto signupRequestDto) {
+        return Member.builder()
+                .name(signupRequestDto.getName())
+                .birth(signupRequestDto.getBirth())
+                .email(signupRequestDto.getEmail())
+                .firstAddress(signupRequestDto.getFirstAddress())
+                .secondAddress(signupRequestDto.getSecondAddress())
+                .password(signupRequestDto.getPassword())
                 .build();
     }
 
-    public LoginRequestDto toLoginRequestDto() {
-        return LoginRequestDto.builder()
-                .email(this.email)
-                .password(this.password)
-                .build();
-    }
 
 
     @Override

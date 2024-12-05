@@ -1,4 +1,4 @@
-package com.elice.homealone.member;
+package com.elice.homealone.member.controller;
 
 import com.elice.homealone.module.member.dto.TokenDto;
 import com.elice.homealone.module.member.service.OAuthService;

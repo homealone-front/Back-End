@@ -45,7 +45,7 @@ public class AuthService{
         isEmailDuplicate(signupRequestDTO.getEmail());
         //비밀번호 암호화
         String password = passwordEncoder.encode(signupRequestDTO.getPassword());
-        Member savedMember = signupRequestDTO.toEntity();
+        Member savedMember = Member.from(signupRequestDTO);
         savedMember.setPassword(password);
         //회원 저장
         memberRepository.save(savedMember);
@@ -174,10 +174,10 @@ public class AuthService{
     /**
      * 회원 탈퇴 withdrawal
      */
-    public MemberDto withdrawal(Member member) {
+    public boolean withdrawal(Member member) {
         Member findedMember = memberService.findByEmail(member.getEmail());
         findedMember.setDeletedAt(true);
-        return memberRepository.save(findedMember).toDto();
+        return true;
     }
 
     /**
