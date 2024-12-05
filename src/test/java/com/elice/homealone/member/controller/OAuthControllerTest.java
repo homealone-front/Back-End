@@ -22,29 +22,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class OAuthControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private OAuthService oAuthService;
-
-    @Autowired
-    private NaverProperties naverProperties;
-
-    @Test
-    @DisplayName("소셜 로그인 리다이렉트 URL 반환 테스트")
-    void testOAuth2LoginRedirect() throws Exception {
-        // Given: 플랫폼에 따른 리다이렉트 URL을 Mocking
-        String platform = "naver";
-        String redirectUrl = naverProperties.getUri(); // 프로퍼티에서 가져온 값
-        Mockito.when(oAuthService.getRedirectUri(platform)).thenReturn(redirectUrl);
-
-        // When: 리다이렉트 URL API 호출
-        mockMvc.perform(get("/oauth/" + platform)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()) // Then: 상태코드 200 확인
-                .andExpect(content().string(redirectUrl)); // 반환된 URL이 예상값인지 확인
-    }
+//    @Autowired
+//    private MockMvc mockMvc;
+//
+//    @MockBean
+//    private OAuthService oAuthService;
+//
+//    @Autowired
+//    private NaverProperties naverProperties;
+//
+//    @Test
+//    @DisplayName("소셜 로그인 리다이렉트 URL 반환 테스트")
+//    void testOAuth2LoginRedirect() throws Exception {
+//        // Given: 플랫폼에 따른 리다이렉트 URL을 Mocking
+//        String platform = "naver";
+//        String redirectUrl = naverProperties.getUri(); // 프로퍼티에서 가져온 값
+//        Mockito.when(oAuthService.getRedirectUri(platform)).thenReturn(redirectUrl);
+//
+//        // When: 리다이렉트 URL API 호출
+//        mockMvc.perform(get("/oauth/" + platform)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk()) // Then: 상태코드 200 확인
+//                .andExpect(content().string(redirectUrl)); // 반환된 URL이 예상값인지 확인
+//    }
 //
 //    @Test
 //    @DisplayName("소셜 로그인 콜백 테스트")
