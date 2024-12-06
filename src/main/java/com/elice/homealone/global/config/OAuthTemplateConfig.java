@@ -19,31 +19,16 @@ import java.util.Map;
 public class OAuthTemplateConfig {
     private final NaverProperties naverProperties;
     private final KakaoProperties kakaoProperties;
-    private final GoogleProperties googleProperties;
+//    private final GoogleProperties googleProperties;
 
     @Bean
-    public AbstractOAuthTemplate naverOAuthStrategy() {
+    public AbstractOAuthTemplate naver() {
         return new NaverOAuthTemplate(naverProperties);
     }
 
     @Bean
-    public AbstractOAuthTemplate kakaoOAuthStrategy() {
+    public AbstractOAuthTemplate kakao() {
         return new KakaoOAuthTemplate(kakaoProperties);
     }
 
-//    @Bean
-//    public AbstractOAuthTemplate googleOAuthStrategy() {
-//        return new GoogleOAuthTemplate(googleProperties);
-//    }
-
-    @Bean
-    public Map<String, AbstractOAuthTemplate> oauthTemplates(
-            AbstractOAuthTemplate naverOAuthStrategy,
-            AbstractOAuthTemplate kakaoOAuthStrategy) {
-        Map<String, AbstractOAuthTemplate> templates = new HashMap<>();
-        templates.put("naver", naverOAuthStrategy);
-        templates.put("kakao", kakaoOAuthStrategy);
-//        templates.put("google", googleOAuthStrategy);
-        return templates;
-    }
 }

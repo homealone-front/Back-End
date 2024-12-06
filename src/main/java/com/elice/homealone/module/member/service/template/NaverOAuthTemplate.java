@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 public class NaverOAuthTemplate extends AbstractOAuthTemplate {
@@ -22,7 +23,7 @@ public class NaverOAuthTemplate extends AbstractOAuthTemplate {
     }
 
     @Override
-    protected Member parseUserInfo(String responseBody) throws JsonProcessingException {
+    public Member parseUserInfo(String responseBody) throws JsonProcessingException { //임시로 퍼블릭
         ObjectMapper objectMapper = new ObjectMapper();
 
         JsonNode jsonNode = objectMapper.readTree(responseBody);

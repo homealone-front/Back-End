@@ -62,13 +62,14 @@ public class OAuthService {
      * @return TokneDto
      */
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
-//        String accessToken = requestAccessToken(platform, code);
-//        Member member = getUserInfo(platform, accessToken);
-//        return signupOrLogin(member, response);
+        System.out.println("Injected templates: " + templates);
+        System.out.println("platform"+platform);
         AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
+        System.out.println("template"+template);
         if (template == null) {
             throw new HomealoneException(ErrorCode.BAD_REQUEST);
         }
+
         String accessToken = template.requestAccessToken(code);
         Member member = template.getUserInfo(accessToken);
         return signupOrLogin(member, response);

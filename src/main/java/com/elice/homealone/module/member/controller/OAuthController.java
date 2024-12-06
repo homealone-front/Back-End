@@ -36,9 +36,9 @@ public class OAuthController {
         String code = (String) requestBody.get("code");
         TokenDto tokenDto = oAuthService.processOAuthLogin(platform, code, response);
         System.out.println("이거까지 찍히면 진짜 토큰 발급 되는거임");
-        return new ResponseEntity<>(tokenDto, HttpStatus.OK);
+        return new ResponseEntity<>(tokenDto, HttpStatus.OK)
     }
-    
+//
 //    //로컬 테스트 코드
 //    private final OAuthService oAuthService;
 //    @Operation(summary = "소셜 로그인 페이지 리다이렉트")
@@ -52,9 +52,11 @@ public class OAuthController {
 //    @Operation(summary = "소셜 로그인 콜백 (code 수신 및 accessToken 발급)")
 //    @GetMapping ("/{platform}/callback")
 //    public String getAccessToken (@PathVariable String platform, @RequestParam String code, HttpServletResponse response){
+//        System.out.println("요청은 받는지 테스트");
 //        TokenDto tokenDto = oAuthService.processOAuthLogin(platform, code, response);
 //        System.out.println("이거까지 찍히면 진짜 토큰 발급 되는거임");
 //        return tokenDto.getAccessToken();
 //    }
+
 }
 
