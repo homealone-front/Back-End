@@ -28,10 +28,8 @@ public abstract class AbstractOAuthTemplate {
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
-
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<String> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, request, String.class);
-
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readTree(response.getBody()).get("access_token").asText();

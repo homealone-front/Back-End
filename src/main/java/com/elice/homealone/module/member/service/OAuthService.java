@@ -62,115 +62,13 @@ public class OAuthService {
      * @return TokneDto
      */
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
-        System.out.println("Injected templates: " + templates);
-        System.out.println("platform"+platform);
         AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
-        System.out.println("template"+template);
         if (template == null) {
             throw new HomealoneException(ErrorCode.BAD_REQUEST);
         }
-
         String accessToken = template.requestAccessToken(code);
         Member member = template.getUserInfo(accessToken);
         return signupOrLogin(member, response);
-    }
-
-    private String requestAccessToken(String platform, String code) {
-        String tokenRequestUrl;
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-
-        tokenRequestUrl = getTokenRequestUrl(platform);
-        params.add("code", code);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-        System.out.println("Token Request URL: " + tokenRequestUrl);
-        System.out.println("Request Body: " + request.getBody());
-        ResponseEntity<String> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, request, String.class);
-        System.out.println("토큰 요청 직후 response:"+response);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readTree(response.getBody()).get("access_token").asText();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String getTokenRequestUrl(String platform) {
-        String tokenRequestUrl;
-        switch (platform.toLowerCase()) {
-            case "naver" -> tokenRequestUrl = naverProperties.getTokenRequestURL();
-            case "kakao" -> tokenRequestUrl = kakaoProperties.getTokenRequestURL();
-            case "google" -> tokenRequestUrl = googleProperties.getTokenRequestURL();
-            default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
-        }
-        return tokenRequestUrl;
-    }
-
-    public Member getUserInfo(String platform, String accessToken) {
-        String userInfoUrl;
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
-
-        userInfoUrl = getUserInfoUrl(platform);
-
-        HttpEntity<String> request = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, String.class);
-        System.out.println("response"+response);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            JsonNode jsonNode = objectMapper.readTree(response.getBody());
-            JsonNode responseNode = jsonNode;
-            String email = "";
-            String name = "";
-            String profileImageUrl = "";
-            switch(platform.toLowerCase()){
-                case "naver" -> {
-                    responseNode = jsonNode.path("response");
-                    email = responseNode.get("email").asText();
-                    name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : email;
-                    profileImageUrl = responseNode.has("profile_image") ? responseNode.get("profile_image").asText() : "";
-                }
-                case "kakao" -> {
-                    responseNode = jsonNode.path("kakao_account");
-                    email = responseNode.get("email").asText();
-                    responseNode = responseNode.path("profile");
-                    name = responseNode.has("nickname") ? responseNode.get("nickname").asText() : email;
-                    profileImageUrl = responseNode.has("profile_image_url") ? responseNode.get("profile_image_url").asText() : "";
-
-                }
-                case "google" -> {
-                    email = jsonNode.get("email").asText();
-                    name = jsonNode.get("name").asText();
-                    profileImageUrl = jsonNode.get("picture").asText();
-                }
-            }
-
-            return Member.builder()
-                    .email(email)
-                    .name(name)
-                    .imageUrl(profileImageUrl)
-                    .password("OAUTH2.0!") //TODO 해시함수로 업데이트?
-                    .build();
-
-        } catch (JsonProcessingException e) {
-            throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
-        }
-    }
-
-    private static String getUserInfoUrl(String platform) {
-        String userInfoUrl;
-        switch (platform.toLowerCase()) {
-            case "naver" -> userInfoUrl = "https://openapi.naver.com/v1/nid/me";
-            case "kakao" -> userInfoUrl = "https://kapi.kakao.com/v2/user/me";
-            case "google" -> userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo";
-            default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
-        }
-        return userInfoUrl;
     }
 
     public TokenDto signupOrLogin(Member member, HttpServletResponse httpServletResponse) {
