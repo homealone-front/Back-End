@@ -66,6 +66,7 @@ public class OAuthService {
         if (template == null) {
             throw new HomealoneException(ErrorCode.BAD_REQUEST);
         }
+        System.out.println("template:"+template);
         String accessToken = template.requestAccessToken(code);
         Member member = template.getUserInfo(accessToken);
         return signupOrLogin(member, response);

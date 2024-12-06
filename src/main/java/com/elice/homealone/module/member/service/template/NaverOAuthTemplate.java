@@ -24,6 +24,7 @@ public class NaverOAuthTemplate extends AbstractOAuthTemplate {
 
     @Override
     public Member parseUserInfo(String responseBody) throws JsonProcessingException { //임시로 퍼블릭
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         JsonNode jsonNode = objectMapper.readTree(responseBody);

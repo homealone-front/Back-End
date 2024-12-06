@@ -30,6 +30,7 @@ public abstract class AbstractOAuthTemplate {
         params.add("code", code);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<String> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, request, String.class);
+        System.out.println("response access: "+response);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readTree(response.getBody()).get("access_token").asText();
@@ -44,7 +45,7 @@ public abstract class AbstractOAuthTemplate {
         headers.add("Authorization", "Bearer " + accessToken);
         HttpEntity<String> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, request, String.class);
-        System.out.println("response: "+response);
+        System.out.println("response info: "+response);
 
         try {
             return parseUserInfo(response.getBody());
