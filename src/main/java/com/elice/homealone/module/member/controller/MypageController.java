@@ -6,6 +6,7 @@ import com.elice.homealone.module.comment.service.CommentService;
 import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.member.service.MemberService;
 import com.elice.homealone.module.post.entity.Post.Type;
 import com.elice.homealone.module.post.sevice.PostService;
 import com.elice.homealone.module.recipe.dto.RecipePageDto;
@@ -37,6 +38,7 @@ public class MypageController {
     private final RecipeService recipeService;
     private final CommentService commentService;
     private final PostService postService;
+    private final MemberService memberService;
 
     @Operation(summary = "마이페이지 정보 조회")
     @GetMapping("")
@@ -47,7 +49,7 @@ public class MypageController {
     @Operation(summary = "마이페이지 정보 수정")
     @PatchMapping("")
     public ResponseEntity<MemberDto> editMemberInfo(@RequestBody MemberDto memberDTO){
-        MemberDto changedMember = MemberDto.from(authService.editMember(memberDTO));
+        MemberDto changedMember = MemberDto.from(memberService.editMember(memberDTO));
         return ResponseEntity.ok(changedMember);
     }
 
@@ -104,7 +106,7 @@ public class MypageController {
     @Operation(summary = "계정 탈퇴")
     @PatchMapping("/withdrawal")
     public ResponseEntity<String> withdrawal() {
-        authService.withdrawal(authService.getMember());
+        memberService.withdrawal(authService.getMember());
         return ResponseEntity.ok("회원 탈퇴가 완료됐습니다.");
     }
 

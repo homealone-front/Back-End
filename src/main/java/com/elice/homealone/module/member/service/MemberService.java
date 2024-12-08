@@ -3,52 +3,55 @@ package com.elice.homealone.module.member.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
-public class MemberService implements UserDetailsService {
+public class MemberService{
     private final MemberRepository memberRepository;
+    private final AuthService authService;
+    private final MemberQueryService memberQueryService;
 
-    /**
-     * 회원 전체 조회
-     */
-    public Page<Member> findAll(Pageable pageable) {
-        return memberRepository.findAll(pageable);
-    }
-
-    /**
-     * 회원 조회
-     * email으로 member를 찾는다.
-     */
-    public Member findByEmail(String email) {
-        return memberRepository.findByEmail(email).orElseThrow(() -> new HomealoneException(ErrorCode.EMAIL_NOT_FOUND));
-    }
-
-    /**
-     * 회원 조회
-     * memberID로 member를 찾는다
-     */
-    public Member findById(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(()->new HomealoneException(ErrorCode.MEMBER_NOT_FOUND));
-    }
-
-
-    /**
-     * 스프링 시큐리티 인증 로직
-     * email을 통해서 SecurityContextHolder에 사용자를 저장해둔다.
-     */
-    @Override
-    public Member loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = findByEmail(email);
+    public Member editMember(MemberDto memberDTO) {
+        Member member = authService.getMember();
+        Optional.ofNullable(memberDTO.getName()).ifPresent(name->member.setName(name));
+        Optional.ofNullable(memberDTO.getBirth()).ifPresent(birth->member.setBirth(birth));
+        Optional.ofNullable(memberDTO.getFirstAddress()).ifPresent(first->member.setFirstAddress(first));
+        Optional.ofNullable(memberDTO.getSecondAddress()).ifPresent(second->member.setSecondAddress(second));
+        Optional.ofNullable(memberDTO.getImageUrl()).ifPresent(address->member.setImageUrl(address));
+        memberRepository.save(member);
         return member;
     }
+
+    /**
+     * 회원 탈퇴 withdrawal
+     */
+    public boolean withdrawal(Member member) {
+        Member findedMember = memberQueryService.findByEmail(member.getEmail());
+        findedMember.setDeletedAt(true);
+        return true;
+    }
+
+    /**
+     * 회원 삭제 delete
+     */
+    public void deleteMember(Long memberId) {
+        Member findedMember = memberQueryService.findById(memberId);
+        memberRepository.delete(findedMember);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.elice.homealone.module.scrap.service;
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
 import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.member.service.MemberQueryService;
 import com.elice.homealone.module.member.service.MemberService;
 import com.elice.homealone.module.scrap.dto.ScrapReqDto;
 import com.elice.homealone.module.scrap.dto.ScrapResDto;
@@ -26,6 +27,7 @@ public class ScrapService {
     private final PostService postService;
     private final AuthService authService;
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
 
     // 북마크 등록
     @Transactional
@@ -62,7 +64,7 @@ public class ScrapService {
     public ScrapResDto createAndDeleteScrap(ScrapReqDto reqDto) {
         try {
             Member member = authService.getMember();
-            member = memberService.findById(member.getId());
+            member = memberQueryService.findById(member.getId());
             Post post = postService.findById(reqDto.getPostId());
             Optional<Scrap> scrap = scrapRepository.findByMemberIdAndPostId(member.getId(), post.getId());
             if(scrap.isEmpty()){

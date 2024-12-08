@@ -10,7 +10,6 @@ import com.elice.homealone.module.member.dto.request.SignupRequestDto;
 import com.elice.homealone.module.member.dto.TokenDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.repository.MemberRepository;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,10 +27,10 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService{
+public class AuthService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final RedisUtil redisUtil;
@@ -37,9 +38,6 @@ public class AuthService{
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private int refreshExpirationTime;
 
-    /**
-     * 회원 가입
-     */
     public void signUp(SignupRequestDto signupRequestDTO){
         //이메일 중복검사
         isEmailDuplicate(signupRequestDTO.getEmail());
@@ -51,11 +49,8 @@ public class AuthService{
         memberRepository.save(savedMember);
     }
 
-    /**
-     * 로그인
-     */
     public TokenDto login(LoginRequestDto loginRequestDTO, HttpServletResponse httpServletResponse) {
-        Member findMember = memberService.findByEmail(loginRequestDTO.getEmail());
+        Member findMember = memberQueryService.findByEmail(loginRequestDTO.getEmail());
         isAccountDeleted(findMember);
         if (passwordEncoder.matches(loginRequestDTO.getPassword(), findMember.getPassword())) {
             String acessToken = GRANT_TYPE + jwtTokenProvider.createAccessToken(findMember.getEmail());
@@ -70,16 +65,9 @@ public class AuthService{
         }
     }
 
-    /**
-     * 회원 deltedAt 유무 검증
-     */
     public void isAccountDeleted(Member member) {
         if(!member.isEnabled()) throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
     }
-
-    /**
-     * 로그아웃
-     */
 
     public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         String acccessToken = httpServletRequest.getHeader("Authorization");
@@ -92,9 +80,6 @@ public class AuthService{
         httpServletResponse.addCookie(cookie);
     }
 
-    /**
-     * refreshToken 쿠키에 저장
-     */
     public Cookie storeRefreshToken(String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(false);
@@ -127,9 +112,6 @@ public class AuthService{
         return tokenDto;
     }
 
-    /**
-     * 이메일 중복여부 검사
-     */
     public boolean isEmailDuplicate(String email) {
         if(memberRepository.findByEmail(email).isPresent()){
             throw new HomealoneException(ErrorCode.EMAIL_ALREADY_EXISTS);
@@ -137,41 +119,6 @@ public class AuthService{
         return false;
     }
 
-    /**
-     * 회원 수정
-     * Auth: User
-     */
-    public Member editMember(MemberDto memberDTO) {
-        Member member = getMember();
-        Optional.ofNullable(memberDTO.getName()).ifPresent(name->member.setName(name));
-        Optional.ofNullable(memberDTO.getBirth()).ifPresent(birth->member.setBirth(birth));
-        Optional.ofNullable(memberDTO.getFirstAddress()).ifPresent(first->member.setFirstAddress(first));
-        Optional.ofNullable(memberDTO.getSecondAddress()).ifPresent(second->member.setSecondAddress(second));
-        Optional.ofNullable(memberDTO.getImageUrl()).ifPresent(address->member.setImageUrl(address));
-        memberRepository.save(member);
-        return member;
-    }
-
-    /**
-     * 회원 삭제 delete
-     */
-    public void deleteMember(Long memberId) {
-        Member findedMember = memberService.findById(memberId);
-        memberRepository.delete(findedMember);
-    }
-
-    /**
-     * 회원 탈퇴 withdrawal
-     */
-    public boolean withdrawal(Member member) {
-        Member findedMember = memberService.findByEmail(member.getEmail());
-        findedMember.setDeletedAt(true);
-        return true;
-    }
-
-    /**
-     * 회원 정보 받아오는 메소드
-     */
     public Member getMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //비회원 처리
@@ -185,6 +132,17 @@ public class AuthService{
         } else {
             throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
         }
+    }
+
+
+    /**
+     * 스프링 시큐리티 인증 로직
+     * email을 통해서 SecurityContextHolder에 사용자를 저장해둔다.
+     */
+    @Override
+    public Member loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = memberQueryService.findByEmail(email);
+        return member;
     }
 
     /**
