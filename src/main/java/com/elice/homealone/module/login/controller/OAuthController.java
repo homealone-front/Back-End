@@ -1,7 +1,7 @@
 package com.elice.homealone.module.login.controller;
 
 
-import com.elice.homealone.module.member.dto.TokenDto;
+import com.elice.homealone.module.login.dto.TokenDto;
 import com.elice.homealone.module.login.service.OAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,7 +1,5 @@
 package com.elice.homealone.module.room.dto;
 
-import com.elice.homealone.module.comment.entity.Comment;
-import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.room.entity.Room;
 import com.elice.homealone.module.tag.dto.PostTagDto;
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.elice.homealone.module.member.dto;
+package com.elice.homealone.module.login.dto;
 
 
 import lombok.Getter;

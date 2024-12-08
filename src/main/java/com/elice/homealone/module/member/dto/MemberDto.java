@@ -2,16 +2,13 @@ package com.elice.homealone.module.member.dto;
 
 
 import com.elice.homealone.module.member.entity.Member;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberDto {
     private Long id;
     private String name;
@@ -22,6 +19,19 @@ public class MemberDto {
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+
+    @Builder
+    public MemberDto(Long id, String name, LocalDate birth, String email, String firstAddress, String secondAddress, String imageUrl, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.id = id;
+        this.name = name;
+        this.birth = birth;
+        this.email = email;
+        this.firstAddress = firstAddress;
+        this.secondAddress = secondAddress;
+        this.imageUrl = imageUrl;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
 
     public static MemberDto from(Member member) {
         return MemberDto.builder()

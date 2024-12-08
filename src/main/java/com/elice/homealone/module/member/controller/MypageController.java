@@ -59,12 +59,15 @@ public class MypageController {
         Page<RoomResponseDTO> roomByMember = roomService.findRoomByMember(pageable);
         return ResponseEntity.ok(roomByMember);
     }
+
     @Operation(summary = "혼잣말 게시글 회원으로 조회")
     @GetMapping("/talk")
     public ResponseEntity<Page<TalkResponseDTO>> findTalkByMember(@PageableDefault(size = 10) Pageable pageable){
         Page<TalkResponseDTO> talkByMember = talkService.findTalkByMember(pageable);
         return ResponseEntity.ok(talkByMember);
     }
+
+    @Operation(summary = "레시피 게시글 회원으로 조회")
     @GetMapping("/recipes")
     public ResponseEntity<Page<RecipePageDto>> findRecipeByMember(@PageableDefault(size=10) Pageable pageable) {
         Member member = authService.getMember();
@@ -72,24 +75,28 @@ public class MypageController {
         return new ResponseEntity<>(pageDtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "댓글 회원으로 조회")
     @GetMapping("/comments")
     public ResponseEntity<Page<CommentResDto>> findCommentByMember(@PageableDefault(size=10) Pageable pageable) {
         Page<CommentResDto> resDtos = commentService.findCommentByMember(pageable);
         return new ResponseEntity<>(resDtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "방자랑 게시글 스크랩 회원별 조회")
     @GetMapping("/scraps/room")
     public ResponseEntity<Page<RoomResponseDTO>> findRoomByScrap(@PageableDefault(size=10) Pageable pageable) {
         Page<RoomResponseDTO> resDtos = postService.findByScrap(pageable, Type.ROOM, Room.class, RoomResponseDTO::toRoomResponseDTO);
         return new ResponseEntity<>(resDtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "혼잣말 게시글 스크랩 회원별 조회")
     @GetMapping("/scraps/talk")
     public ResponseEntity<Page<TalkResponseDTO>> findTalkByScrap(@PageableDefault(size=10) Pageable pageable) {
         Page<TalkResponseDTO> resDtos = postService.findByScrap(pageable, Type.TALK, Talk.class, TalkResponseDTO::toTalkResponseDTO);
         return new ResponseEntity<>(resDtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "방자랑 게시글 스크랩 회원별 조회")
     @GetMapping("/scraps/recipes")
     public ResponseEntity<Page<RecipePageDto>> findRecipeByScrap(@PageableDefault(size=10) Pageable pageable) {
         Page<RecipePageDto> resDtos = recipeService.findByScrap(pageable);
@@ -109,7 +116,4 @@ public class MypageController {
         memberService.withdrawal(authService.getMember());
         return ResponseEntity.ok("회원 탈퇴가 완료됐습니다.");
     }
-
-
-
 }

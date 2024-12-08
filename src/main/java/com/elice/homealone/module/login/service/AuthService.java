@@ -6,7 +6,7 @@ import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.global.redis.RedisUtil;
 import com.elice.homealone.module.login.dto.request.LoginRequestDto;
 import com.elice.homealone.module.login.dto.request.SignupRequestDto;
-import com.elice.homealone.module.member.dto.TokenDto;
+import com.elice.homealone.module.login.dto.TokenDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.repository.MemberRepository;
 import com.elice.homealone.module.member.service.MemberQueryService;

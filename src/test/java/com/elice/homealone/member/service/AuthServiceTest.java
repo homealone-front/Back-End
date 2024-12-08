@@ -1,7 +1,7 @@
 package com.elice.homealone.member.service;
 
 import com.elice.homealone.global.jwt.JwtTokenProvider;
-import com.elice.homealone.module.member.dto.TokenDto;
+import com.elice.homealone.module.login.dto.TokenDto;
 import com.elice.homealone.module.login.dto.request.LoginRequestDto;
 import com.elice.homealone.module.login.dto.request.SignupRequestDto;
 import com.elice.homealone.module.member.entity.Member;
