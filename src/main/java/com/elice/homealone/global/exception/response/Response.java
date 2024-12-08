@@ -1,4 +1,4 @@
-package com.elice.homealone.global.exception;
+package com.elice.homealone.global.exception.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,26 +16,13 @@ public class Response {
     }
     }
 
-
-    @Getter
-    @Setter
-    public static class URLResponse{
-
-        private String imageUrl;
-        private String fileName;
-
-        public URLResponse(String url, String fileName) {
-            this.imageUrl = url;
-            this.fileName = fileName;
-
-        }
-    }
-
     @Getter
     @AllArgsConstructor
     public static class ErrorResponse {
         private final int status;
-        private final String error;
+        private final String code;
         private final String message;
     }
+
+
 }

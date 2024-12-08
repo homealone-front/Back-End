@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
@@ -18,9 +19,9 @@ public enum ErrorCode {
 
     //401
     MISMATCHED_PASSWORD(UNAUTHORIZED, "비밀번호가 일치하지 않습니다"),
-    INVALID_TOKEN(UNAUTHORIZED, "INVALID_TOKEN"),
-    EXPIRED_TOKEN(UNAUTHORIZED, "EXPIRED_ACCESS_TOKEN"),
-    EXPIRED_REFRESH_TOKEN(UNAUTHORIZED, "EXPIRED_REFRESH_TOKEN"),
+    INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다"),
+    EXPIRED_ACCESS_TOKEN(UNAUTHORIZED, "access token이 만료되었습니다."),
+    EXPIRED_REFRESH_TOKEN(UNAUTHORIZED, "refresh token이 만료되었습니다."),
     MEMBER_NOT_AUTHENTICATED(UNAUTHORIZED, "인증되지 않은 회원입니다."),
 
     //403
@@ -50,4 +51,16 @@ public enum ErrorCode {
 
     private final HttpStatus httpStatus;
     private final String message;
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    public String getCode() {
+        return this.name();
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

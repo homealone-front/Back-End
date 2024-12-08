@@ -1,5 +1,6 @@
 package com.elice.homealone.global.exception;
 
+import com.elice.homealone.global.exception.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -11,6 +12,8 @@ import org.springframework.web.context.request.WebRequest;
 
 
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,10 +24,32 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ex.getErrorCode();
         Response.ErrorResponse errorResponse = new Response.ErrorResponse(
                 errorCode.getHttpStatus().value(),
-                errorCode.getHttpStatus().getReasonPhrase(),
+                errorCode.getCode(),
                 errorCode.getMessage()
         );
         return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Response.ErrorResponse> handleAuthenticationException(AuthException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
+        Response.ErrorResponse errorResponse = new Response.ErrorResponse(
+                errorCode.getHttpStatus().value(),
+                errorCode.getCode(),
+                errorCode.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<Response.ErrorResponse> handleJwtException(JwtException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
+        Response.ErrorResponse errorResponse = new Response.ErrorResponse(
+                errorCode.getHttpStatus().value(),
+                errorCode.getCode(),
+                errorCode.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -36,15 +61,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Response.ErrorResponse> handleAuthenticationException(AuthenticationException ex,WebRequest request) {
-        Response.ErrorResponse errorResponse = new Response.ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
-                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-                ex.getMessage()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
+
 
 
     @ExceptionHandler(AccessDeniedException.class)
