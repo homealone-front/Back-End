@@ -1,28 +1,18 @@
-package com.elice.homealone.module.member.service;
+package com.elice.homealone.module.login.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
-import com.elice.homealone.module.member.dto.request.LoginRequestDto;
-import com.elice.homealone.module.member.dto.request.SignupRequestDto;
-import com.elice.homealone.module.member.service.property.GoogleProperties;
-import com.elice.homealone.module.member.service.property.KakaoProperties;
-import com.elice.homealone.module.member.service.property.NaverProperties;
+import com.elice.homealone.module.login.dto.request.LoginRequestDto;
+import com.elice.homealone.module.login.dto.request.SignupRequestDto;
+import com.elice.homealone.module.login.service.property.GoogleProperties;
+import com.elice.homealone.module.login.service.property.KakaoProperties;
+import com.elice.homealone.module.login.service.property.NaverProperties;
 import com.elice.homealone.module.member.dto.TokenDto;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.template.AbstractOAuthTemplate;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.elice.homealone.module.login.service.template.AbstractOAuthTemplate;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;

@@ -1,12 +1,11 @@
-package com.elice.homealone.module.member.service.template;
+package com.elice.homealone.module.login.service.template;
 
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.property.KakaoProperties;
+import com.elice.homealone.module.login.service.property.KakaoProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 public class KakaoOAuthTemplate extends AbstractOAuthTemplate{

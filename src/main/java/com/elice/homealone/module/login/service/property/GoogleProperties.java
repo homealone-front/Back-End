@@ -1,4 +1,4 @@
-package com.elice.homealone.module.member.service.property;
+package com.elice.homealone.module.login.service.property;
 import lombok.Data;
         import org.springframework.boot.context.properties.ConfigurationProperties;
         import org.springframework.context.annotation.Configuration;

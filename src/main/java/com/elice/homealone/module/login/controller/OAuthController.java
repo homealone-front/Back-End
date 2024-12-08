@@ -1,19 +1,16 @@
-package com.elice.homealone.module.member.controller;
+package com.elice.homealone.module.login.controller;
 
 
 import com.elice.homealone.module.member.dto.TokenDto;
-import com.elice.homealone.module.member.service.OAuthService;
+import com.elice.homealone.module.login.service.OAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.Map;
 
 

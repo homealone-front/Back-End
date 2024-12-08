@@ -1,19 +1,11 @@
 package com.elice.homealone.module.member.service;
 
 
-import com.elice.homealone.global.exception.ErrorCode;
-import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.module.login.service.AuthService;
 import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

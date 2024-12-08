@@ -7,13 +7,12 @@ import com.elice.homealone.module.like.dto.LikeResDto;
 import com.elice.homealone.module.like.entity.Like;
 import com.elice.homealone.module.like.repository.LikeRepository;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.login.service.AuthService;
 import com.elice.homealone.module.member.service.MemberQueryService;
 import com.elice.homealone.module.member.service.MemberService;
 import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.post.sevice.PostService;
 
-import com.elice.homealone.module.recipe.entity.Recipe;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

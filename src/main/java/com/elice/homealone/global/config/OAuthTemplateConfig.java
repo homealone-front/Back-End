@@ -1,11 +1,11 @@
 package com.elice.homealone.global.config;
 
-import com.elice.homealone.module.member.service.property.KakaoProperties;
-import com.elice.homealone.module.member.service.property.NaverProperties;
+import com.elice.homealone.module.login.service.property.KakaoProperties;
+import com.elice.homealone.module.login.service.property.NaverProperties;
 
-import com.elice.homealone.module.member.service.template.AbstractOAuthTemplate;
-import com.elice.homealone.module.member.service.template.KakaoOAuthTemplate;
-import com.elice.homealone.module.member.service.template.NaverOAuthTemplate;
+import com.elice.homealone.module.login.service.template.AbstractOAuthTemplate;
+import com.elice.homealone.module.login.service.template.KakaoOAuthTemplate;
+import com.elice.homealone.module.login.service.template.NaverOAuthTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

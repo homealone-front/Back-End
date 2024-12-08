@@ -2,7 +2,6 @@ package com.elice.homealone.module.member.controller;
 
 import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
 import com.elice.homealone.module.member.service.MemberQueryService;
 import com.elice.homealone.module.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;

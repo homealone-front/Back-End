@@ -5,7 +5,7 @@ import com.elice.homealone.module.comment.dto.CommentResDto;
 import com.elice.homealone.module.comment.service.CommentService;
 import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.login.service.AuthService;
 import com.elice.homealone.module.member.service.MemberService;
 import com.elice.homealone.module.post.entity.Post.Type;
 import com.elice.homealone.module.post.sevice.PostService;
