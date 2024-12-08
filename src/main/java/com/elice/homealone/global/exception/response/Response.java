@@ -9,11 +9,10 @@ public class Response {
     @Getter
     @Setter
     public static class ApiResponse{
-    private String message;
-
-    public ApiResponse(String message) {
-        this.message = message;
-    }
+        private String message;
+        public ApiResponse(String message) {
+            this.message = message;
+        }
     }
 
     @Getter
@@ -23,6 +22,4 @@ public class Response {
         private final String code;
         private final String message;
     }
-
-
 }

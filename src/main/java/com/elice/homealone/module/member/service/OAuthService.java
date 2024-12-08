@@ -13,7 +13,6 @@ import com.elice.homealone.module.member.service.template.AbstractOAuthTemplate;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
@@ -26,12 +25,6 @@ public class OAuthService {
     private final GoogleProperties googleProperties;
     private final AuthService authService;
 
-
-    /**
-     * 경로 변수 platform 마다 각기 다른 로그인 페이지로의 리다이렉트를 돕는 메소드
-     * @param platform
-     * @return redirectUrl
-     */
     public String getRedirectUri(String platform) {
         return switch (platform.toLowerCase()) {
             case "naver" -> naverProperties.getUri();
@@ -41,15 +34,6 @@ public class OAuthService {
         };
     }
 
-    /**
-     * Authorization Server에서 code를 보내는 것을 받고
-     * access token을 통해 Resource Server에서 User information을 받아서
-     * 회원가입 하거나 로그인을 하여 TokenDto를 반환하는 메소드
-     * @param platform
-     * @param code
-     * @param response
-     * @return TokneDto
-     */
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
         AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
         if (template == null) {

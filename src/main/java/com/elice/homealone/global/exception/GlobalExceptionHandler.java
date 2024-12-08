@@ -41,17 +41,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<Response.ErrorResponse> handleJwtException(JwtException ex) {
-        ErrorCode errorCode = ex.getErrorCode();
-        Response.ErrorResponse errorResponse = new Response.ErrorResponse(
-                errorCode.getHttpStatus().value(),
-                errorCode.getCode(),
-                errorCode.getMessage()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -61,11 +50,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-
-
-
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Response.ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+    public ResponseEntity<Response.ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
         Response.ErrorResponse errorResponse = new Response.ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
                 HttpStatus.FORBIDDEN.getReasonPhrase(),
@@ -73,6 +59,5 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
-
 
 }
