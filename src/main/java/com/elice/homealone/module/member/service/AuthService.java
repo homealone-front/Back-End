@@ -1,7 +1,7 @@
 package com.elice.homealone.module.member.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
-import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.global.exception.AuthException;
 import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.global.redis.RedisUtil;
 import com.elice.homealone.module.member.dto.MemberDto;
@@ -66,7 +66,7 @@ public class AuthService{
             httpServletResponse.addCookie(storeRefreshToken(refreshToken));
             return response;
         } else{
-            throw new HomealoneException(ErrorCode.MISMATCHED_PASSWORD);
+            throw new AuthException(ErrorCode.MISMATCHED_PASSWORD);
         }
     }
 
@@ -74,7 +74,7 @@ public class AuthService{
      * 회원 deltedAt 유무 검증
      */
     public void isAccountDeleted(Member member) {
-        if(!member.isEnabled()) throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
+        if(!member.isEnabled()) throw new AuthException(ErrorCode.MEMBER_NOT_FOUND);
     }
 
     /**
@@ -132,7 +132,7 @@ public class AuthService{
      */
     public boolean isEmailDuplicate(String email) {
         if(memberRepository.findByEmail(email).isPresent()){
-            throw new HomealoneException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new AuthException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
         return false;
     }
@@ -183,7 +183,7 @@ public class AuthService{
         if (principal instanceof Member) {
             return (Member) principal;
         } else {
-            throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
+            throw new AuthException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
 

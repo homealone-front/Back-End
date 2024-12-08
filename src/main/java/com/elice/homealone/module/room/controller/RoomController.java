@@ -1,6 +1,6 @@
 package com.elice.homealone.module.room.controller;
 
-import com.elice.homealone.global.exception.Response;
+import com.elice.homealone.global.exception.response.Response;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.room.service.RoomService;
 import com.elice.homealone.module.room.dto.RoomRequestDTO;
@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
 @Tag(name ="RoomController",description = "방자랑 게시글 관련 API")
 @Slf4j
 @RestController

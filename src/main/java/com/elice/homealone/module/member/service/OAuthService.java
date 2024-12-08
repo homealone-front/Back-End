@@ -1,7 +1,7 @@
 package com.elice.homealone.module.member.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
-import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.global.exception.AuthException;
 import com.elice.homealone.module.member.dto.request.LoginRequestDto;
 import com.elice.homealone.module.member.dto.request.SignupRequestDto;
 import com.elice.homealone.module.member.service.property.GoogleProperties;
@@ -10,19 +10,9 @@ import com.elice.homealone.module.member.service.property.NaverProperties;
 import com.elice.homealone.module.member.dto.TokenDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.service.template.AbstractOAuthTemplate;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -31,7 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuthService {
     private final Map<String, AbstractOAuthTemplate> templates;
-    private final RestTemplate restTemplate = new RestTemplate();
     private final NaverProperties naverProperties;
     private final KakaoProperties kakaoProperties;
     private final GoogleProperties googleProperties;
@@ -48,7 +37,7 @@ public class OAuthService {
             case "naver" -> naverProperties.getUri();
             case "google" -> googleProperties.getUri();
             case "kakao" -> kakaoProperties.getUri();
-            default -> throw new HomealoneException(ErrorCode.BAD_REQUEST);
+            default -> throw new AuthException(ErrorCode.BAD_REQUEST);
         };
     }
 
@@ -64,7 +53,7 @@ public class OAuthService {
     public TokenDto processOAuthLogin(String platform, String code, HttpServletResponse response ) {
         AbstractOAuthTemplate template = templates.get(platform.toLowerCase());
         if (template == null) {
-            throw new HomealoneException(ErrorCode.BAD_REQUEST);
+            throw new AuthException(ErrorCode.BAD_REQUEST);
         }
         System.out.println("template:"+template);
         String accessToken = template.requestAccessToken(code);
@@ -77,7 +66,7 @@ public class OAuthService {
             if(!authService.isEmailDuplicate(member.getEmail())){
                 authService.signUp(SignupRequestDto.toResponse(member));
             }
-        }catch (HomealoneException e) {
+        }catch (AuthException e) {
 
         }
         TokenDto tokenDto = authService.login(LoginRequestDto.toResponse(member), httpServletResponse);

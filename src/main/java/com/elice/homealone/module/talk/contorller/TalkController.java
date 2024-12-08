@@ -1,6 +1,6 @@
 package com.elice.homealone.module.talk.contorller;
 
-import com.elice.homealone.global.exception.Response;
+import com.elice.homealone.global.exception.response.Response;
 import com.elice.homealone.module.talk.Service.TalkService;
 import com.elice.homealone.module.talk.dto.TalkRequestDTO;
 import com.elice.homealone.module.talk.dto.TalkResponseDTO;
