@@ -81,6 +81,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
                 .firstAddress(signupRequestDto.getFirstAddress())
                 .secondAddress(signupRequestDto.getSecondAddress())
                 .password(signupRequestDto.getPassword())
+                .role(Role.ROLE_USER)
                 .build();
     }
 

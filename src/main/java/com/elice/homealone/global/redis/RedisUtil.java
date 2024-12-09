@@ -1,6 +1,8 @@
     package com.elice.homealone.global.redis;
 
 
+    import com.elice.homealone.global.exception.ErrorCode;
+    import com.elice.homealone.global.exception.HomealoneException;
     import lombok.RequiredArgsConstructor;
     import org.springframework.beans.factory.annotation.Value;
     import org.springframework.data.redis.core.RedisTemplate;
@@ -56,7 +58,7 @@
 
         public boolean hasKeyBlackList(String key) {
             if (redisBlackListTemplate == null) {
-                throw new IllegalStateException("redisBlackListTemplate is not initialized");
+                throw new HomealoneException(ErrorCode.REDIS_NOT_INITIALIZED);
             }
             return Boolean.TRUE.equals(redisBlackListTemplate.hasKey(key));
         }

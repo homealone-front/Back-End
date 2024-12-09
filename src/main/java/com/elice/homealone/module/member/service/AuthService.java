@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -41,14 +42,25 @@ public class AuthService{
      * 회원 가입
      */
     public void signUp(SignupRequestDto signupRequestDTO){
+        String email = signupRequestDTO.getEmail();
         //이메일 중복검사
-        isEmailDuplicate(signupRequestDTO.getEmail());
+        isEmailDuplicate(email);
+        //요청 중복 방지
+        isRequestDuplicate(email);
         //비밀번호 암호화
         String password = passwordEncoder.encode(signupRequestDTO.getPassword());
         Member savedMember = Member.from(signupRequestDTO);
         savedMember.setPassword(password);
         //회원 저장
         memberRepository.save(savedMember);
+    }
+
+    public void isRequestDuplicate(String email) {
+        if (redisUtil.hasKey(email)) {
+            throw new HomealoneException(ErrorCode.DUPLICATE_REQUEST);
+        }
+        //레디스에 이메일 저장 (10초)
+        redisUtil.set(email, "processing", 10000);
     }
 
     /**
@@ -69,6 +81,7 @@ public class AuthService{
             throw new HomealoneException(ErrorCode.MISMATCHED_PASSWORD);
         }
     }
+
 
     /**
      * 회원 deltedAt 유무 검증
