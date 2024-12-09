@@ -2,6 +2,7 @@ package com.elice.homealone.module.login.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.AuthException;
+import com.elice.homealone.global.exception.HomealoneException;
 import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.global.redis.RedisUtil;
 import com.elice.homealone.module.login.dto.request.LoginRequestDto;
@@ -64,7 +65,7 @@ public class AuthService implements UserDetailsService {
     }
 
     public void isAccountDeleted(Member member) {
-        if(!member.isEnabled()) throw new AuthException(ErrorCode.MEMBER_NOT_FOUND);
+        if(!member.isEnabled()) throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
     }
 
     public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){

@@ -81,8 +81,8 @@ public class RecipeController {
 
     @GetMapping("/trends")
     public ResponseEntity<Page<RecipePageDto>> getRecipeByLikes(@PageableDefault(size=4) Pageable pageable) {
-        Page<RecipePageDto> pageDtos = recipeService.getRecipeByLikes(pageable);
-        return new ResponseEntity<>(pageDtos, HttpStatus.OK);
+        Page<RecipePageDto> trendRecipesDto = recipeService.findTopRecipeByView(pageable);
+        return new ResponseEntity<>(trendRecipesDto, HttpStatus.OK);
     }
 }
 
