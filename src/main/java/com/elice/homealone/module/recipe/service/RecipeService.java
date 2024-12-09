@@ -275,9 +275,11 @@ public class RecipeService {
 
     public Page<RecipePageDto> findTopRecipeByView(Pageable pageable) {
         LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
-        Page<RecipePageDto> recipePageDtos = recipeViewLogService.findTop4RecipesByViewCountInLastWeek(monthAgo,pageable).map(Recipe::toPageDto);
+        System.out.println("트렌드서비스");
+        Page<RecipePageDto> recipePageDtos = recipeViewLogService.findTop4RecipesByViewCountInLastWeek(monthAgo,pageable).map(Recipe::toTopRecipePageDto);
+        System.out.println("완료");
         if(recipePageDtos.isEmpty()){
-            recipePageDtos  = recipeRepository.findByOrderByViewDesc(pageable).map(Recipe::toPageDto);
+            recipePageDtos  = recipeRepository.findByOrderByViewDesc(pageable).map(Recipe::toTopRecipePageDto);
         }
 
         return recipePageDtos;
