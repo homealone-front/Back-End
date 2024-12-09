@@ -1,10 +1,9 @@
-package com.elice.homealone.module.member.controller;
+package com.elice.homealone.module.login.controller;
 
-import com.elice.homealone.module.member.dto.request.LoginRequestDto;
-import com.elice.homealone.module.member.dto.request.SignupRequestDto;
-import com.elice.homealone.module.member.dto.TokenDto;
-import com.elice.homealone.module.member.service.AuthService;
-import com.elice.homealone.module.member.service.OAuthService;
+import com.elice.homealone.module.login.dto.request.LoginRequestDto;
+import com.elice.homealone.module.login.dto.request.SignupRequestDto;
+import com.elice.homealone.module.login.dto.TokenDto;
+import com.elice.homealone.module.login.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
 
-    /**
-     * 현재 사이트를 읽기전용으로 변경해놓기 위해서 회원가입 기능 임시로 막아둠
-     */
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody SignupRequestDto signupRequestDTO) {
@@ -37,8 +33,7 @@ public class AuthController {
         TokenDto tokenDto = authService.login(loginRequestDTO, response);
         return new ResponseEntity<>(tokenDto, HttpStatus.OK);
     }
-
-
+    
     @Operation(summary = "AccessToken 재발급")
     @GetMapping("/token/refresh")
     public ResponseEntity<TokenDto>  refreshAceessToken(HttpServletRequest request) {

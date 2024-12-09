@@ -1,4 +1,4 @@
-package com.elice.homealone.module.member.service.template;
+package com.elice.homealone.module.login.service.template;
 
 import com.elice.homealone.module.member.entity.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;

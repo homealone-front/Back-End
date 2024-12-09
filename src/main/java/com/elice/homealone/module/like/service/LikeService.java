@@ -7,12 +7,12 @@ import com.elice.homealone.module.like.dto.LikeResDto;
 import com.elice.homealone.module.like.entity.Like;
 import com.elice.homealone.module.like.repository.LikeRepository;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.login.service.AuthService;
+import com.elice.homealone.module.member.service.MemberQueryService;
 import com.elice.homealone.module.member.service.MemberService;
 import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.post.sevice.PostService;
 
-import com.elice.homealone.module.recipe.entity.Recipe;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,12 +31,13 @@ public class LikeService {
     private final PostService postService;
 
     private final AuthService authService;
+    private final MemberQueryService memberQueryService;
 
     @Transactional
     public LikeResDto createAndDeleteLike(LikeReqDto reqDto){
         try {
             Member member = authService.getMember();
-            member = memberService.findById(member.getId());
+            member = memberQueryService.findById(member.getId());
             Post post = postService.findById(reqDto.getPostId());
             Optional<Like> like = likeRepository.findByMemberIdAndPostId(member.getId(), post.getId());
             if(like.isEmpty()){

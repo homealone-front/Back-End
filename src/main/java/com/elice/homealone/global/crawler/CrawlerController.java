@@ -3,6 +3,7 @@ package com.elice.homealone.global.crawler;
 import com.elice.homealone.global.jobstatus.JobStatus;
 import com.elice.homealone.global.jobstatus.JobStatusService;
 import com.elice.homealone.module.member.entity.Member;
+import com.elice.homealone.module.member.service.MemberQueryService;
 import com.elice.homealone.module.member.service.MemberService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,7 @@ public class CrawlerController {
     private final CrawlerService crawlerService;
     private final MemberService memberService;
     private final JobStatusService jobStatusService;
+    private final MemberQueryService memberQueryService;
 
     @PostMapping("/saverecipe/{date}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -42,7 +44,7 @@ public class CrawlerController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         String jobId = UUID.randomUUID().toString();
-        crawlerService.loadFromMongoAndSaveRecipe(memberService.findById(member.getId()), parsedDate, jobId);
+        crawlerService.loadFromMongoAndSaveRecipe(memberQueryService.findById(member.getId()), parsedDate, jobId);
         return ResponseEntity.accepted().body(jobId);
     }
 

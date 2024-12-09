@@ -1,6 +1,6 @@
 package com.elice.homealone.module.chatting.controller;
 
-import com.elice.homealone.global.exception.Response;
+import com.elice.homealone.global.exception.response.Response;
 import com.elice.homealone.module.chatting.entity.ChatDto;
 import com.elice.homealone.module.chatting.repository.ChatRoomRepository;
 import com.elice.homealone.module.chatting.service.ChatRoomService;
@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.elice.homealone.module.member.dto.request;
+package com.elice.homealone.module.login.dto.request;
 
 
 import com.elice.homealone.module.member.entity.Member;

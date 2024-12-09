@@ -5,8 +5,7 @@ import com.elice.homealone.global.exception.HomealoneException;
 import com.elice.homealone.module.comment.service.CommentService;
 import com.elice.homealone.module.like.service.LikeService;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
-import com.elice.homealone.module.member.service.MemberService;
+import com.elice.homealone.module.login.service.AuthService;
 import com.elice.homealone.module.post.dto.PostRelatedDto;
 import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.post.sevice.PostService;
@@ -19,10 +18,13 @@ import com.elice.homealone.module.recipe.repository.RecipeRepository.RecipeRepos
 import com.elice.homealone.module.recipe.dto.RecipeIngredientDto;
 import com.elice.homealone.module.recipe.dto.RecipeRequestDto;
 import com.elice.homealone.module.recipe.entity.Recipe;
+import com.elice.homealone.module.room.dto.RoomResponseDTO;
 import com.elice.homealone.module.scrap.service.ScrapService;
 import com.elice.homealone.module.tag.Service.PostTagService;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -50,6 +52,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final ScrapService scrapService;
     private final CommentService commentService;
+    private final RecipeViewLogService recipeViewLogService;
 
 
     // 레시피 등록
@@ -268,5 +271,15 @@ public class RecipeService {
                 throw new HomealoneException(ErrorCode.RECIPE_NOT_FOUND);
             }
         }
+    }
+
+    public Page<RecipePageDto> findTopRecipeByView(Pageable pageable) {
+        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+        Page<RecipePageDto> recipePageDtos = recipeViewLogService.findTop4RecipesByViewCountInLastWeek(monthAgo,pageable).map(Recipe::toPageDto);
+        if(recipePageDtos.isEmpty()){
+            recipePageDtos  = recipeRepository.findByOrderByViewDesc(pageable).map(Recipe::toPageDto);
+        }
+
+        return recipePageDtos;
     }
 }

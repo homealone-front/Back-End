@@ -5,7 +5,8 @@ import com.elice.homealone.module.comment.dto.CommentResDto;
 import com.elice.homealone.module.comment.service.CommentService;
 import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.login.service.AuthService;
+import com.elice.homealone.module.member.service.MemberService;
 import com.elice.homealone.module.post.entity.Post.Type;
 import com.elice.homealone.module.post.sevice.PostService;
 import com.elice.homealone.module.recipe.dto.RecipePageDto;
@@ -37,6 +38,7 @@ public class MypageController {
     private final RecipeService recipeService;
     private final CommentService commentService;
     private final PostService postService;
+    private final MemberService memberService;
 
     @Operation(summary = "마이페이지 정보 조회")
     @GetMapping("")
@@ -47,7 +49,7 @@ public class MypageController {
     @Operation(summary = "마이페이지 정보 수정")
     @PatchMapping("")
     public ResponseEntity<MemberDto> editMemberInfo(@RequestBody MemberDto memberDTO){
-        MemberDto changedMember = MemberDto.from(authService.editMember(memberDTO));
+        MemberDto changedMember = MemberDto.from(memberService.editMember(memberDTO));
         return ResponseEntity.ok(changedMember);
     }
 
@@ -57,12 +59,15 @@ public class MypageController {
         Page<RoomResponseDTO> roomByMember = roomService.findRoomByMember(pageable);
         return ResponseEntity.ok(roomByMember);
     }
+
     @Operation(summary = "혼잣말 게시글 회원으로 조회")
     @GetMapping("/talk")
     public ResponseEntity<Page<TalkResponseDTO>> findTalkByMember(@PageableDefault(size = 10) Pageable pageable){
         Page<TalkResponseDTO> talkByMember = talkService.findTalkByMember(pageable);
         return ResponseEntity.ok(talkByMember);
     }
+
+    @Operation(summary = "레시피 게시글 회원으로 조회")
     @GetMapping("/recipes")
     public ResponseEntity<Page<RecipePageDto>> findRecipeByMember(@PageableDefault(size=10) Pageable pageable) {
         Member member = authService.getMember();
@@ -70,24 +75,28 @@ public class MypageController {
         return new ResponseEntity<>(pageDtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "댓글 회원으로 조회")
     @GetMapping("/comments")
     public ResponseEntity<Page<CommentResDto>> findCommentByMember(@PageableDefault(size=10) Pageable pageable) {
         Page<CommentResDto> resDtos = commentService.findCommentByMember(pageable);
         return new ResponseEntity<>(resDtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "방자랑 게시글 스크랩 회원별 조회")
     @GetMapping("/scraps/room")
     public ResponseEntity<Page<RoomResponseDTO>> findRoomByScrap(@PageableDefault(size=10) Pageable pageable) {
         Page<RoomResponseDTO> resDtos = postService.findByScrap(pageable, Type.ROOM, Room.class, RoomResponseDTO::toRoomResponseDTO);
         return new ResponseEntity<>(resDtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "혼잣말 게시글 스크랩 회원별 조회")
     @GetMapping("/scraps/talk")
     public ResponseEntity<Page<TalkResponseDTO>> findTalkByScrap(@PageableDefault(size=10) Pageable pageable) {
         Page<TalkResponseDTO> resDtos = postService.findByScrap(pageable, Type.TALK, Talk.class, TalkResponseDTO::toTalkResponseDTO);
         return new ResponseEntity<>(resDtos, HttpStatus.OK);
     }
 
+    @Operation(summary = "방자랑 게시글 스크랩 회원별 조회")
     @GetMapping("/scraps/recipes")
     public ResponseEntity<Page<RecipePageDto>> findRecipeByScrap(@PageableDefault(size=10) Pageable pageable) {
         Page<RecipePageDto> resDtos = recipeService.findByScrap(pageable);
@@ -104,10 +113,7 @@ public class MypageController {
     @Operation(summary = "계정 탈퇴")
     @PatchMapping("/withdrawal")
     public ResponseEntity<String> withdrawal() {
-        authService.withdrawal(authService.getMember());
+        memberService.withdrawal(authService.getMember());
         return ResponseEntity.ok("회원 탈퇴가 완료됐습니다.");
     }
-
-
-
 }

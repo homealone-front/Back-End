@@ -1,13 +1,13 @@
 package com.elice.homealone.member.service;
 
 
-import com.elice.homealone.module.member.dto.TokenDto;
-import com.elice.homealone.module.member.dto.request.LoginRequestDto;
-import com.elice.homealone.module.member.dto.request.SignupRequestDto;
+import com.elice.homealone.module.login.dto.TokenDto;
+import com.elice.homealone.module.login.dto.request.LoginRequestDto;
+import com.elice.homealone.module.login.dto.request.SignupRequestDto;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.login.service.AuthService;
+import com.elice.homealone.module.login.service.template.AbstractOAuthTemplate;
 import com.elice.homealone.module.member.service.OAuthService;
-import com.elice.homealone.module.member.service.template.AbstractOAuthTemplate;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

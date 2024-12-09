@@ -9,7 +9,8 @@ import com.elice.homealone.module.comment.repository.CommentRepository;
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.login.service.AuthService;
+import com.elice.homealone.module.member.service.MemberQueryService;
 import com.elice.homealone.module.member.service.MemberService;
 
 import java.util.List;
@@ -28,14 +29,14 @@ public class CommentLikeService {
         private final CommentLikeRepository commentLikeRepository;
         private final CommentRepository commentRepository;
         private final MemberService memberService;
-
+        private final MemberQueryService memberQueryService;
         private final AuthService authService;
 
         @Transactional
         public CommentLikeResDto createAndDeleteCommentLike(CommentLikeReqDto reqDto) {
                 try {
                         Member member = authService.getMember();
-                        member = memberService.findById(member.getId());
+                        member = memberQueryService.findById(member.getId());
                         Comment comment = commentRepository.findById(reqDto.getCommentId()).get();
                         if(member==null) {
                                 return null;

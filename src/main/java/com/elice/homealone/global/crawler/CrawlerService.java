@@ -2,7 +2,7 @@ package com.elice.homealone.global.crawler;
 
 import com.elice.homealone.global.jobstatus.JobStatus;
 import com.elice.homealone.global.jobstatus.JobStatusService;
-import com.elice.homealone.module.member.dto.request.SignupRequestDto;
+import com.elice.homealone.module.login.dto.request.SignupRequestDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.entity.Role;
 import com.elice.homealone.module.member.repository.MemberRepository;

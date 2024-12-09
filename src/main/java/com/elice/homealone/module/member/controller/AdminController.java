@@ -2,7 +2,7 @@ package com.elice.homealone.module.member.controller;
 
 import com.elice.homealone.module.member.dto.MemberDto;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.member.service.MemberQueryService;
 import com.elice.homealone.module.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin")
 @Tag(name = "AdminController", description = "관리자 API")
 public class AdminController {
-    private final AuthService authService;
     private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     @Operation(summary = "전체 회원 조회")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/member")
     public ResponseEntity<Page<Member>> getAllMember(@PageableDefault(size = 3) Pageable pageable) {
-        Page<Member> members = memberService.findAll(pageable);
+        Page<Member> members = memberQueryService.findAll(pageable);
         return ResponseEntity.ok(members);
     }
 
@@ -34,7 +34,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/member/{memberId}")
     public ResponseEntity<MemberDto> getMemberById(@PathVariable Long memberId) {
-        MemberDto memberDTO = MemberDto.from(memberService.findById(memberId));
+        MemberDto memberDTO = MemberDto.from(memberQueryService.findById(memberId));
         return ResponseEntity.ok(memberDTO);
     }
 
@@ -42,7 +42,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/member/{memberId}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
-        authService.deleteMember(memberId);
+        memberService.deleteMember(memberId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

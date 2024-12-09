@@ -5,9 +5,7 @@ import com.elice.homealone.module.comment.entity.Comment;
 
 import com.elice.homealone.global.common.BaseTimeEntity;
 import com.elice.homealone.module.commentlike.entity.CommentLike;
-import com.elice.homealone.module.member.dto.MemberDto;
-import com.elice.homealone.module.member.dto.request.LoginRequestDto;
-import com.elice.homealone.module.member.dto.request.SignupRequestDto;
+import com.elice.homealone.module.login.dto.request.SignupRequestDto;
 import com.elice.homealone.module.like.entity.Like;
 import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.scrap.entity.Scrap;

@@ -9,7 +9,7 @@ import com.elice.homealone.module.like.entity.Like;
 import com.elice.homealone.module.like.repository.LikeRepository;
 import com.elice.homealone.module.like.service.LikeService;
 import com.elice.homealone.module.member.entity.Member;
-import com.elice.homealone.module.member.service.AuthService;
+import com.elice.homealone.module.login.service.AuthService;
 import com.elice.homealone.module.room.entity.RoomImage;
 import com.elice.homealone.module.room.repository.RoomImageRepository;
 import com.elice.homealone.module.room.repository.RoomRepository;
@@ -57,6 +57,7 @@ public class RoomService {
     private final ScrapRepository scrapRepository;
     private final PostTagRepository postTagRepository;
     private final RoomImageRepository roomImageRepository;
+
     @Transactional
     public RoomResponseDTO.RoomInfoDto CreateRoomPost(RoomRequestDTO roomDto){
         Member member = authService.getMember();

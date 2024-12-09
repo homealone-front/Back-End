@@ -1,16 +1,16 @@
-package com.elice.homealone.module.member.service;
+package com.elice.homealone.module.login.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
+import com.elice.homealone.global.exception.AuthException;
 import com.elice.homealone.global.exception.HomealoneException;
 import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.global.redis.RedisUtil;
-import com.elice.homealone.module.member.dto.MemberDto;
-import com.elice.homealone.module.member.dto.request.LoginRequestDto;
-import com.elice.homealone.module.member.dto.request.SignupRequestDto;
-import com.elice.homealone.module.member.dto.TokenDto;
+import com.elice.homealone.module.login.dto.request.LoginRequestDto;
+import com.elice.homealone.module.login.dto.request.SignupRequestDto;
+import com.elice.homealone.module.login.dto.TokenDto;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.member.repository.MemberRepository;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.elice.homealone.module.member.service.MemberQueryService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,18 +19,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
 @Service
 @RequiredArgsConstructor
-public class AuthService{
+public class AuthService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final RedisUtil redisUtil;
@@ -38,9 +37,6 @@ public class AuthService{
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private int refreshExpirationTime;
 
-    /**
-     * 회원 가입
-     */
     public void signUp(SignupRequestDto signupRequestDTO){
         String email = signupRequestDTO.getEmail();
         //이메일 중복검사
@@ -63,11 +59,8 @@ public class AuthService{
         redisUtil.set(email, "processing", 10000);
     }
 
-    /**
-     * 로그인
-     */
     public TokenDto login(LoginRequestDto loginRequestDTO, HttpServletResponse httpServletResponse) {
-        Member findMember = memberService.findByEmail(loginRequestDTO.getEmail());
+        Member findMember = memberQueryService.findByEmail(loginRequestDTO.getEmail());
         isAccountDeleted(findMember);
         if (passwordEncoder.matches(loginRequestDTO.getPassword(), findMember.getPassword())) {
             String acessToken = GRANT_TYPE + jwtTokenProvider.createAccessToken(findMember.getEmail());
@@ -78,21 +71,13 @@ public class AuthService{
             httpServletResponse.addCookie(storeRefreshToken(refreshToken));
             return response;
         } else{
-            throw new HomealoneException(ErrorCode.MISMATCHED_PASSWORD);
+            throw new AuthException(ErrorCode.MISMATCHED_PASSWORD);
         }
     }
 
-
-    /**
-     * 회원 deltedAt 유무 검증
-     */
     public void isAccountDeleted(Member member) {
-        if(!member.isEnabled()) throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
+        if(!member.isEnabled()) throw new AuthException(ErrorCode.MEMBER_NOT_FOUND);
     }
-
-    /**
-     * 로그아웃
-     */
 
     public void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         String acccessToken = httpServletRequest.getHeader("Authorization");
@@ -105,9 +90,6 @@ public class AuthService{
         httpServletResponse.addCookie(cookie);
     }
 
-    /**
-     * refreshToken 쿠키에 저장
-     */
     public Cookie storeRefreshToken(String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(false);
@@ -140,51 +122,13 @@ public class AuthService{
         return tokenDto;
     }
 
-    /**
-     * 이메일 중복여부 검사
-     */
     public boolean isEmailDuplicate(String email) {
         if(memberRepository.findByEmail(email).isPresent()){
-            throw new HomealoneException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new AuthException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
         return false;
     }
 
-    /**
-     * 회원 수정
-     * Auth: User
-     */
-    public Member editMember(MemberDto memberDTO) {
-        Member member = getMember();
-        Optional.ofNullable(memberDTO.getName()).ifPresent(name->member.setName(name));
-        Optional.ofNullable(memberDTO.getBirth()).ifPresent(birth->member.setBirth(birth));
-        Optional.ofNullable(memberDTO.getFirstAddress()).ifPresent(first->member.setFirstAddress(first));
-        Optional.ofNullable(memberDTO.getSecondAddress()).ifPresent(second->member.setSecondAddress(second));
-        Optional.ofNullable(memberDTO.getImageUrl()).ifPresent(address->member.setImageUrl(address));
-        memberRepository.save(member);
-        return member;
-    }
-
-    /**
-     * 회원 삭제 delete
-     */
-    public void deleteMember(Long memberId) {
-        Member findedMember = memberService.findById(memberId);
-        memberRepository.delete(findedMember);
-    }
-
-    /**
-     * 회원 탈퇴 withdrawal
-     */
-    public boolean withdrawal(Member member) {
-        Member findedMember = memberService.findByEmail(member.getEmail());
-        findedMember.setDeletedAt(true);
-        return true;
-    }
-
-    /**
-     * 회원 정보 받아오는 메소드
-     */
     public Member getMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //비회원 처리
@@ -196,8 +140,19 @@ public class AuthService{
         if (principal instanceof Member) {
             return (Member) principal;
         } else {
-            throw new HomealoneException(ErrorCode.MEMBER_NOT_FOUND);
+            throw new AuthException(ErrorCode.MEMBER_NOT_FOUND);
         }
+    }
+
+
+    /**
+     * 스프링 시큐리티 인증 로직
+     * email을 통해서 SecurityContextHolder에 사용자를 저장해둔다.
+     */
+    @Override
+    public Member loadUserByUsername(String email) throws UsernameNotFoundException {
+        Member member = memberQueryService.findByEmail(email);
+        return member;
     }
 
     /**
@@ -211,4 +166,3 @@ public class AuthService{
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
     }
 }
-
