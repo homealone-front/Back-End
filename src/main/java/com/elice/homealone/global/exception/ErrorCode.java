@@ -24,6 +24,7 @@ public enum ErrorCode {
     EXPIRED_ACCESS_TOKEN(UNAUTHORIZED, "access token이 만료되었습니다."),
     EXPIRED_REFRESH_TOKEN(UNAUTHORIZED, "refresh token이 만료되었습니다."),
     MEMBER_NOT_AUTHENTICATED(UNAUTHORIZED, "인증되지 않은 회원입니다."),
+    INVALID_CREDENTIALS(UNAUTHORIZED, "아이디 또는 패스워드가 일치하지 않습니다"),
 
     //403
     NOT_UNAUTHORIZED_ACTION(FORBIDDEN,"작성자와 일치하지 않습니다."),

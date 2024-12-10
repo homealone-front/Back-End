@@ -15,6 +15,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
@@ -60,18 +62,23 @@ public class AuthService implements UserDetailsService {
     }
 
     public TokenDto login(LoginRequestDto loginRequestDTO, HttpServletResponse httpServletResponse) {
-        Member findMember = memberQueryService.findByEmail(loginRequestDTO.getEmail());
-        isAccountDeleted(findMember);
+        Member findMember;
+        try {
+            findMember = memberQueryService.findByEmail(loginRequestDTO.getEmail());
+        } catch (HomealoneException e) {// exception1: 존재하지 않는 이메일(가입하지 않은 회원)
+            throw new AuthException(ErrorCode.INVALID_CREDENTIALS);
+        }
+        isAccountDeleted(findMember); //excpetion2: 존재하지 않는 회원(탈퇴한 경우)
         if (passwordEncoder.matches(loginRequestDTO.getPassword(), findMember.getPassword())) {
             String acessToken = GRANT_TYPE + jwtTokenProvider.createAccessToken(findMember.getEmail());
-            String refreshToken = jwtTokenProvider.createRefreshToken(findMember.getEmail()); //쿠키는 공백이 저장되지 않음
+            String refreshToken = jwtTokenProvider.createRefreshToken(findMember.getEmail());
             TokenDto response = new TokenDto();
             response.setAccessToken(acessToken);
             //refreshToken 쿠키 저장
             httpServletResponse.addCookie(storeRefreshToken(refreshToken));
             return response;
-        } else{
-            throw new AuthException(ErrorCode.MISMATCHED_PASSWORD);
+        } else{//exception3: 비밀번호가 일치하지 않음
+            throw new AuthException(ErrorCode.INVALID_CREDENTIALS);
         }
     }
 
