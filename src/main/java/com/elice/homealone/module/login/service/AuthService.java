@@ -50,8 +50,10 @@ public class AuthService implements UserDetailsService {
     }
 
     public void isRequestDuplicate(String email) {
-        if (redisUtil.hasKey(email)) throw new HomealoneException(ErrorCode.DUPLICATE_REQUEST);
-        //레디스에 이메일 저장 (10초)
+        // 회원가입 시 레디스에 중복된 email이 있는지 검사
+        if (redisUtil.hasKey(email))
+            throw new HomealoneException(ErrorCode.DUPLICATE_REQUEST);
+        // 레디스에 회원가입을 시도한 이메일 저장 (10초)
         redisUtil.set(email, "processing", 10000);
     }
 
@@ -139,7 +141,7 @@ public class AuthService implements UserDetailsService {
         Object principal = authentication.getPrincipal();
         //멤버 객체 예외 처리
         if (principal instanceof Member) {
-            return (Member) principal;
+            return memberQueryService.findByEmail(((Member) principal).getEmail());
         } else {
             throw new AuthException(ErrorCode.MEMBER_NOT_FOUND);
         }

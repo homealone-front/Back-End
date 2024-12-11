@@ -4,6 +4,7 @@ package com.elice.homealone.module.member.controller;
 import com.elice.homealone.module.comment.dto.CommentResDto;
 import com.elice.homealone.module.comment.service.CommentService;
 import com.elice.homealone.module.member.dto.MemberDto;
+import com.elice.homealone.module.member.dto.MypageRequest;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.login.service.AuthService;
 import com.elice.homealone.module.member.service.MemberService;
@@ -48,9 +49,9 @@ public class MypageController {
 
     @Operation(summary = "마이페이지 정보 수정")
     @PatchMapping("")
-    public ResponseEntity<MemberDto> editMemberInfo(@RequestBody MemberDto memberDTO){
-        MemberDto changedMember = MemberDto.from(memberService.editMember(memberDTO));
-        return ResponseEntity.ok(changedMember);
+    public ResponseEntity<Void> editMemberInfo(@RequestBody MypageRequest mypageRequest){
+        memberService.editMember(mypageRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "방자랑 게시글 회원으로 조회")

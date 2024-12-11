@@ -7,6 +7,7 @@ import com.elice.homealone.global.common.BaseTimeEntity;
 import com.elice.homealone.module.commentlike.entity.CommentLike;
 import com.elice.homealone.module.login.dto.request.SignupRequestDto;
 import com.elice.homealone.module.like.entity.Like;
+import com.elice.homealone.module.member.dto.MypageRequest;
 import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.scrap.entity.Scrap;
 import jakarta.persistence.*;
@@ -83,7 +84,33 @@ public class Member extends BaseTimeEntity implements UserDetails {
                 .build();
     }
 
+    public void upate(MypageRequest mypageRequest) {
+        setName(mypageRequest.getName());
+        setBirth(mypageRequest.getBirth());
+        setFirstAddress(mypageRequest.getFirstAddress());
+        setSecondAddress(mypageRequest.getSecondAddress());
+        setImageUrl(mypageRequest.getImageUrl());
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setBirth(LocalDate birth) {
+        this.birth = birth;
+    }
+
+    public void setFirstAddress(String firstAddress) {
+        this.firstAddress = firstAddress;
+    }
+
+    public void setSecondAddress(String secondAddress) {
+        this.secondAddress = secondAddress;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
