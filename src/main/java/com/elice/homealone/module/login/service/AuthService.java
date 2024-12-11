@@ -40,23 +40,17 @@ public class AuthService implements UserDetailsService {
     private int refreshExpirationTime;
 
     public void signUp(SignupRequestDto signupRequestDTO){
-        String email = signupRequestDTO.getEmail();
-        //이메일 중복검사
-        isEmailDuplicate(email);
-        //요청 중복 방지
-        isRequestDuplicate(email);
-        //비밀번호 암호화
+        String email = signupRequestDTO.getEmail(); //이메일 중복검사
+        isEmailDuplicate(email); //요청 중복 방지
+        isRequestDuplicate(email); //비밀번호 암호화
         String password = passwordEncoder.encode(signupRequestDTO.getPassword());
         Member savedMember = Member.from(signupRequestDTO);
         savedMember.setPassword(password);
-        //회원 저장
         memberRepository.save(savedMember);
     }
 
     public void isRequestDuplicate(String email) {
-        if (redisUtil.hasKey(email)) {
-            throw new HomealoneException(ErrorCode.DUPLICATE_REQUEST);
-        }
+        if (redisUtil.hasKey(email)) throw new HomealoneException(ErrorCode.DUPLICATE_REQUEST);
         //레디스에 이메일 저장 (10초)
         redisUtil.set(email, "processing", 10000);
     }

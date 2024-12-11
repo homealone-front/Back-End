@@ -1,12 +1,13 @@
 package com.elice.homealone.global.jwt;
 
 import com.elice.homealone.global.exception.ErrorCode;
+import com.elice.homealone.global.exception.TokenException;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.elice.homealone.global.exception.JwtException;
+import com.elice.homealone.global.exception.RefreshTokenException;
 
 import java.util.Base64;
 import java.util.Date;
@@ -57,9 +58,9 @@ public class JwtTokenProvider {
             String email = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
             return true;
         } catch (ExpiredJwtException e) {
-            throw new JwtException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+            throw new TokenException(ErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new JwtException(ErrorCode.INVALID_TOKEN);
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
     }
 
@@ -68,9 +69,9 @@ public class JwtTokenProvider {
             String email = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
             return true;
         } catch (ExpiredJwtException e) {
-            throw new JwtException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+            throw new RefreshTokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new JwtException(ErrorCode.INVALID_TOKEN);
+            throw new RefreshTokenException(ErrorCode.INVALID_TOKEN);
         }
     }
 

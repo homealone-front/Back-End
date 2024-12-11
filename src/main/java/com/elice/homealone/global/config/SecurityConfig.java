@@ -1,5 +1,6 @@
 package com.elice.homealone.global.config;
 
+import com.elice.homealone.global.exception.AuthErrorResponseHandler;
 import com.elice.homealone.global.jwt.JwtAuthenticationFilter;
 import com.elice.homealone.global.jwt.JwtTokenProvider;
 import com.elice.homealone.global.redis.RedisUtil;
@@ -33,6 +34,7 @@ public class SecurityConfig {
     private final RedisUtil redisUtil;
     private final WebConfig webConfig;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final AuthErrorResponseHandler authErrorResponseHandler;
     
     private final String[] admin = {
             "/api/admin/**"
@@ -46,7 +48,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService, redisUtil, handlerExceptionResolver);
+        return new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService, redisUtil, handlerExceptionResolver, authErrorResponseHandler);
     }
 
     @Bean
@@ -72,7 +74,7 @@ public class SecurityConfig {
                             response.setStatus(HttpServletResponse.SC_OK);
                             response.getWriter().flush();
                         }))
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil, handlerExceptionResolver), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService,redisUtil, handlerExceptionResolver, authErrorResponseHandler), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

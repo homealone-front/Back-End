@@ -3,16 +3,13 @@ package com.elice.homealone.global.exception;
 import com.elice.homealone.global.exception.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,8 +38,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<Response.ErrorResponse> handleAuthenticationException(JwtException ex) {
+    @ExceptionHandler(RefreshTokenException.class)
+    public ResponseEntity<Response.ErrorResponse> handleAuthenticationException(RefreshTokenException ex) {
         ErrorCode errorCode = ex.getErrorCode();
         Response.ErrorResponse errorResponse = new Response.ErrorResponse(
                 errorCode.getHttpStatus().value(),
