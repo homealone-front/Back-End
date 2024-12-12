@@ -12,6 +12,8 @@ import com.elice.homealone.module.like.service.LikeService;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.login.service.AuthService;
 import com.elice.homealone.module.recipe.dto.RecipePageDto;
+import com.elice.homealone.module.room.dto.TrendRoomResponse;
+import com.elice.homealone.module.room.dto.TrendRoomResponseWrapper;
 import com.elice.homealone.module.room.entity.RoomImage;
 import com.elice.homealone.module.room.repository.RoomImageRepository;
 import com.elice.homealone.module.room.repository.RoomRepository;
@@ -26,6 +28,8 @@ import com.elice.homealone.module.room.repository.RoomSpecification;
 import com.elice.homealone.module.tag.Repository.PostTagRepository;
 import com.elice.homealone.module.tag.Service.PostTagService;
 import com.elice.homealone.module.tag.entity.PostTag;
+import com.elice.homealone.module.talk.dto.TrendTalkResponse;
+import com.elice.homealone.module.talk.dto.TrendTalkResponseWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -196,16 +200,29 @@ public class RoomService {
         return roomInfoDto;
     }
     @Transactional
-    public Page<RoomResponseDTO> findTopRoomByView(Pageable pageable){
-        Page<RoomResponseDTO> roomResponseDTOS = (Page<RoomResponseDTO>)redisUtil.get(POPULAR_ROOMS_KEY);
-        if (roomResponseDTOS == null) {
-            LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
-            roomResponseDTOS = roomViewLogService.findTop4RoomsByViewCountInLastWeek(monthAgo,pageable).map(RoomResponseDTO::toRoomResponseDTO);
-            if(roomResponseDTOS.isEmpty()){
-                roomResponseDTOS  = roomRepository.findByOrderByViewDesc(pageable).map(RoomResponseDTO::toRoomResponseDTO);
-            }
+    public Page<TrendRoomResponse> findTopRoomByView(Pageable pageable){
+        // Redis에서 데이터 가져오기
+        TrendRoomResponseWrapper cachedWrapper = redisUtil.cachingGet(POPULAR_ROOMS_KEY, TrendRoomResponseWrapper.class);
+        if (cachedWrapper != null) {
+            return cachedWrapper.toPage(pageable);
         }
-        return roomResponseDTOS;
+
+        // 데이터가 없으면 새로 조회
+        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+        Page<TrendRoomResponse> trendRoomResponses = roomViewLogService.findTop4RoomsByViewCountInLastWeek(monthAgo, pageable)
+                .map(TrendRoomResponse::toTrendRoomResponse);
+
+        // 조회 결과가 없을 경우 기본 조회
+        if (trendRoomResponses.isEmpty()) {
+            trendRoomResponses = roomRepository.findByOrderByViewDesc(pageable)
+                    .map(TrendRoomResponse::toTrendRoomResponse);
+        }
+
+        // Redis에 저장
+        TrendRoomResponseWrapper wrapper = new TrendRoomResponseWrapper(trendRoomResponses);
+        redisUtil.cachingSet(POPULAR_ROOMS_KEY, wrapper, 360000);
+
+        return trendRoomResponses;
     }
 
     @Transactional
@@ -213,7 +230,6 @@ public class RoomService {
         Member member = authService.getMember();
         Page<RoomResponseDTO> roomResponseDTOS = roomRepository.findRoomByMember(member, pageable).map(RoomResponseDTO::toRoomResponseDTO);
         return roomResponseDTOS;
-
     }
 
     // 로그인 한 멤버가 스크랩 한 레시피를 반환 해준다.

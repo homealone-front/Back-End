@@ -2,6 +2,7 @@ package com.elice.homealone.module.room.controller;
 
 import com.elice.homealone.global.exception.response.Response;
 import com.elice.homealone.module.member.entity.Member;
+import com.elice.homealone.module.room.dto.TrendRoomResponse;
 import com.elice.homealone.module.room.service.RoomService;
 import com.elice.homealone.module.room.dto.RoomRequestDTO;
 import com.elice.homealone.module.room.dto.RoomResponseDTO;
@@ -74,8 +75,8 @@ public class RoomController {
     }
     @Operation(summary = "방자랑 게시글 인기글 조회")
     @GetMapping("/view")
-    public ResponseEntity<Page<RoomResponseDTO>> findTopRoomByView(@PageableDefault(size = 4) Pageable pageable){
-        Page<RoomResponseDTO> topRoomByView = roomService.findTopRoomByView(pageable);
+    public ResponseEntity<Page<TrendRoomResponse>> findTopRoomByView(@PageableDefault(size = 4) Pageable pageable){
+        Page<TrendRoomResponse> topRoomByView = roomService.findTopRoomByView(pageable);
         return ResponseEntity.ok(topRoomByView);
     }
     @Operation(summary = "방자랑 게시글 회원으로 조회")
