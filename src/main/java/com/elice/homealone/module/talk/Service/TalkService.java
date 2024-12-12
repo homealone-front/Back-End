@@ -2,6 +2,7 @@ package com.elice.homealone.module.talk.Service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.global.redis.RedisUtil;
 import com.elice.homealone.module.comment.entity.Comment;
 import com.elice.homealone.module.comment.repository.CommentRepository;
 import com.elice.homealone.module.like.entity.Like;
@@ -48,6 +49,9 @@ public class TalkService {
     private final CommentRepository commentRepository;
     private final ScrapRepository scrapRepository;
     private final PostTagRepository postTagRepository;
+
+    private final RedisUtil redisUtil;
+    private static final String POPULAR_TALK_KEY = "recent:popular:talk";
     @Transactional
     public TalkResponseDTO.TalkInfoDto CreateTalkPost(TalkRequestDTO talkDto){
         Member member = authService.getMember();
@@ -156,13 +160,15 @@ public class TalkService {
         return talkInfoDto;
     }
 
-
     @Transactional
     public Page<TalkResponseDTO> findTopTalkByView(Pageable pageable){
-        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
-        Page<TalkResponseDTO> talkResponseDTO = talkViewLogService.findTopTalksByViewCountInLastWeek(monthAgo, pageable).map(TalkResponseDTO :: toTalkResponseDTO);
-        if(talkResponseDTO.isEmpty()){
-            talkResponseDTO =  talkRepository.findByOrderByViewDesc(pageable).map(TalkResponseDTO :: toTalkResponseDTO);
+        Page<TalkResponseDTO> talkResponseDTO = (Page<TalkResponseDTO>) redisUtil.get(POPULAR_TALK_KEY);
+        if (talkResponseDTO == null) {
+            LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+            talkResponseDTO = talkViewLogService.findTopTalksByViewCountInLastWeek(monthAgo, pageable).map(TalkResponseDTO :: toTalkResponseDTO);
+            if(talkResponseDTO.isEmpty()){
+                talkResponseDTO =  talkRepository.findByOrderByViewDesc(pageable).map(TalkResponseDTO :: toTalkResponseDTO);
+            }
         }
         return talkResponseDTO;
     }

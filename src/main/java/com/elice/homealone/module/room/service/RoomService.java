@@ -3,6 +3,7 @@ package com.elice.homealone.module.room.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.global.redis.RedisUtil;
 import com.elice.homealone.module.comment.entity.Comment;
 import com.elice.homealone.module.comment.repository.CommentRepository;
 import com.elice.homealone.module.like.entity.Like;
@@ -10,6 +11,7 @@ import com.elice.homealone.module.like.repository.LikeRepository;
 import com.elice.homealone.module.like.service.LikeService;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.login.service.AuthService;
+import com.elice.homealone.module.recipe.dto.RecipePageDto;
 import com.elice.homealone.module.room.entity.RoomImage;
 import com.elice.homealone.module.room.repository.RoomImageRepository;
 import com.elice.homealone.module.room.repository.RoomRepository;
@@ -57,6 +59,9 @@ public class RoomService {
     private final ScrapRepository scrapRepository;
     private final PostTagRepository postTagRepository;
     private final RoomImageRepository roomImageRepository;
+
+    private final RedisUtil redisUtil;
+    private static final String POPULAR_ROOMS_KEY = "recent:popular:rooms";
 
     @Transactional
     public RoomResponseDTO.RoomInfoDto CreateRoomPost(RoomRequestDTO roomDto){
@@ -192,14 +197,14 @@ public class RoomService {
     }
     @Transactional
     public Page<RoomResponseDTO> findTopRoomByView(Pageable pageable){
-        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
-
-        Page<RoomResponseDTO> roomResponseDTOS = roomViewLogService.findTop4RoomsByViewCountInLastWeek(monthAgo,pageable).map(RoomResponseDTO::toRoomResponseDTO);
-        if(roomResponseDTOS.isEmpty()){
-            roomResponseDTOS  = roomRepository.findByOrderByViewDesc(pageable).map(RoomResponseDTO::toRoomResponseDTO);
+        Page<RoomResponseDTO> roomResponseDTOS = (Page<RoomResponseDTO>)redisUtil.get(POPULAR_ROOMS_KEY);
+        if (roomResponseDTOS == null) {
+            LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+            roomResponseDTOS = roomViewLogService.findTop4RoomsByViewCountInLastWeek(monthAgo,pageable).map(RoomResponseDTO::toRoomResponseDTO);
+            if(roomResponseDTOS.isEmpty()){
+                roomResponseDTOS  = roomRepository.findByOrderByViewDesc(pageable).map(RoomResponseDTO::toRoomResponseDTO);
+            }
         }
-
-
         return roomResponseDTOS;
     }
 

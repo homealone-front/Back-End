@@ -2,6 +2,7 @@ package com.elice.homealone.module.recipe.service;
 
 import com.elice.homealone.global.exception.ErrorCode;
 import com.elice.homealone.global.exception.HomealoneException;
+import com.elice.homealone.global.redis.RedisUtil;
 import com.elice.homealone.module.comment.service.CommentService;
 import com.elice.homealone.module.like.service.LikeService;
 import com.elice.homealone.module.member.entity.Member;
@@ -53,6 +54,9 @@ public class RecipeService {
     private final ScrapService scrapService;
     private final CommentService commentService;
     private final RecipeViewLogService recipeViewLogService;
+
+    private final RedisUtil redisUtil;
+    private static final String POPULAR_RECIPES_KEY = "recent:popular:recipes";
 
 
     // 레시피 등록
@@ -274,14 +278,15 @@ public class RecipeService {
     }
 
     public Page<RecipePageDto> findTopRecipeByView(Pageable pageable) {
-        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
-        System.out.println("트렌드서비스");
-        Page<RecipePageDto> recipePageDtos = recipeViewLogService.findTop4RecipesByViewCountInLastWeek(monthAgo,pageable).map(Recipe::toTopRecipePageDto);
-        System.out.println("완료");
-        if(recipePageDtos.isEmpty()){
-            recipePageDtos  = recipeRepository.findByOrderByViewDesc(pageable).map(Recipe::toTopRecipePageDto);
+        Page<RecipePageDto> recipePageDtos = (Page<RecipePageDto>)redisUtil.get(POPULAR_RECIPES_KEY);
+        if (recipePageDtos==null) {
+            LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+            recipePageDtos = recipeViewLogService.findTop4RecipesByViewCountInLastWeek(monthAgo,pageable).map(Recipe::toTopRecipePageDto);
+            if(recipePageDtos.isEmpty()){
+                recipePageDtos  = recipeRepository.findByOrderByViewDesc(pageable).map(Recipe::toTopRecipePageDto);
+            }
+            redisUtil.set(POPULAR_RECIPES_KEY, recipePageDtos, 360000); //1시간동안 저장
         }
-
         return recipePageDtos;
     }
 }
