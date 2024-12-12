@@ -1,9 +1,12 @@
 package com.elice.homealone.module.recipe.dto;
 
+import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.post.dto.PostRelatedDto;
+import com.elice.homealone.module.recipe.entity.Recipe;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 @Getter
 public class RecipePageDto {
@@ -11,7 +14,7 @@ public class RecipePageDto {
 
     private String title;
     private String description;
-    private final int portions;
+    private int portions;
     private String recipeType;
     private int recipeTime;
     private String cuisine;
@@ -22,9 +25,12 @@ public class RecipePageDto {
 
     @Setter
     private PostRelatedDto relatedDto;
-    private final Integer view;
+    private Integer view;
     @Setter
     private String userImage;
+
+    protected RecipePageDto() {
+    }
 
     @Builder
     public RecipePageDto(
@@ -54,5 +60,41 @@ public class RecipePageDto {
 
         this.view = view;
         this.userImage = userImage;
+    }
+
+
+    public static RecipePageDto toTopRecipePageDto(Recipe recipe) {
+        String imageUrl = null;
+        if(recipe.getImages() != null){
+            imageUrl = recipe.getImages().get(0).getImageUrl();
+        }
+
+        Member member = (Member) Hibernate.unproxy(recipe.getMember());
+        Long userId = recipe.getMember().getId();
+        String userName = recipe.getMember().getName();
+
+        RecipePageDto recipePageDto = RecipePageDto.builder()
+                .id(recipe.getId())
+                .title(recipe.getTitle())
+                .description(recipe.getDescription())
+                .portions(recipe.getPortions())
+                .recipeType(recipe.getRecipeType().getType())
+                .recipeTime(recipe.getRecipeTime().getTime())
+                .cuisine(recipe.getCuisine().getCuisine())
+                .imageUrl(imageUrl)
+                .userId(userId)
+                .userName(userName)
+                .userImage(member.getImageUrl())
+                .build();
+
+        PostRelatedDto relatedDto = PostRelatedDto.builder()
+                .commentCount(recipe.getComments().size())
+                .likeCount(recipe.getLikes().size())
+                .scrapCount(recipe.getScraps().size())
+                .build();
+
+        recipePageDto.setRelatedDto(relatedDto);
+
+        return recipePageDto;
     }
 }

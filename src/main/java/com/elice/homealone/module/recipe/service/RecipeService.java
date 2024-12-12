@@ -10,14 +10,9 @@ import com.elice.homealone.module.login.service.AuthService;
 import com.elice.homealone.module.post.dto.PostRelatedDto;
 import com.elice.homealone.module.post.entity.Post;
 import com.elice.homealone.module.post.sevice.PostService;
-import com.elice.homealone.module.recipe.dto.RecipeDetailDto;
-import com.elice.homealone.module.recipe.dto.RecipeImageDto;
-import com.elice.homealone.module.recipe.dto.RecipePageDto;
-import com.elice.homealone.module.recipe.dto.RecipeResponseDto;
+import com.elice.homealone.module.recipe.dto.*;
 
 import com.elice.homealone.module.recipe.repository.RecipeRepository.RecipeRepository;
-import com.elice.homealone.module.recipe.dto.RecipeIngredientDto;
-import com.elice.homealone.module.recipe.dto.RecipeRequestDto;
 import com.elice.homealone.module.recipe.entity.Recipe;
 import com.elice.homealone.module.room.dto.RoomResponseDTO;
 import com.elice.homealone.module.scrap.service.ScrapService;
@@ -76,23 +71,23 @@ public class RecipeService {
 
             // 레시피 dto 재료 리스트를 통해 레시피 재료 생성 후 레시피 엔티티에 추가
             List<RecipeIngredientDto> ingredientDtos = requestDto.getIngredients();
-            if(ingredientDtos != null){
-                for(RecipeIngredientDto ingredientDto : ingredientDtos) {
+            if (ingredientDtos != null) {
+                for (RecipeIngredientDto ingredientDto : ingredientDtos) {
                     recipe.addIngredients(recipeIngredientService.createRecipeIngredient(ingredientDto));
                 }
             }
 
             // 레시피 dto 디테일 리스트로 레시피 디테일 생성 후 레시피 엔티티에 추가
             Optional.ofNullable(requestDto.getDetails())
-                .ifPresent(detailDtos -> detailDtos.stream()
-                    .map(recipeDetailService::createRecipeDetail)
-                    .forEach(recipe::addDetail));
+                    .ifPresent(detailDtos -> detailDtos.stream()
+                            .map(recipeDetailService::createRecipeDetail)
+                            .forEach(recipe::addDetail));
 
             // 태그 리스트로 태그 생성 후 레시피 엔티티(포스트 엔티티) 에 추가
             Optional.ofNullable(requestDto.getPostTags())
-                .ifPresent(tagDtos -> tagDtos.stream()
-                    .map(postTagService::createPostTag)
-                    .forEach(recipe::addTag));
+                    .ifPresent(tagDtos -> tagDtos.stream()
+                            .map(postTagService::createPostTag)
+                            .forEach(recipe::addTag));
 
             return recipe.toResponseDto();
 
@@ -103,34 +98,34 @@ public class RecipeService {
 
     // QueryDsl 레시피 페이지 조회
     public Page<RecipePageDto> findRecipes(
-        Pageable pageable,
-        String all,
-        Long memberId,
-        String userName,
-        String title,
-        String description,
-        List<String> tags
+            Pageable pageable,
+            String all,
+            Long memberId,
+            String userName,
+            String title,
+            String description,
+            List<String> tags
     ) {
         List<Recipe> recipes = recipeRepository.findRecipes(pageable, all, memberId, userName, title, description, tags);
         Page<Recipe> recipePage = PageableExecutionUtils.getPage(
-            recipes,
-            pageable,
-            () -> recipeRepository.countRecipes( all, memberId, userName, title, description, tags)
+                recipes,
+                pageable,
+                () -> recipeRepository.countRecipes(all, memberId, userName, title, description, tags)
         );
 
         try {
             Member member = authService.getMember();
             // List<Recipe> -> List<Post>
             List<Post> posts = recipes.stream()
-                .map(post -> (Post) post)
-                .toList();
+                    .map(post -> (Post) post)
+                    .toList();
 
             Set<Long> likedRecipeIds = getLikedPostIds(member, posts);
             Set<Long> scrapedRecipeIds = getScrapedPostIds(member, posts);
 
             return recipePage.map(recipe -> createRecipePageDto(recipe, likedRecipeIds, scrapedRecipeIds));
         } catch (HomealoneException e) {
-            if (e.getErrorCode()==ErrorCode.MEMBER_NOT_FOUND) {
+            if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
                 return recipePage.map(this::createRecipePageDto);
             } else {
                 throw new HomealoneException(ErrorCode.RECIPE_NOT_FOUND);
@@ -141,7 +136,7 @@ public class RecipeService {
     // 레시피 상세 조회
     public RecipeResponseDto findById(Long id) {
         Recipe recipe = recipeRepository.findById(id)
-            .orElseThrow(()-> new HomealoneException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new HomealoneException(ErrorCode.RECIPE_NOT_FOUND));
 
         RecipeResponseDto resDto = recipe.toResponseDto();
         PostRelatedDto relatedDto = postService.getPostRelated(recipe);
@@ -156,7 +151,7 @@ public class RecipeService {
 //            resDto.setUserImage(member.getImageUrl());
             return resDto;
         } catch (HomealoneException e) {
-            if (e.getErrorCode()==ErrorCode.MEMBER_NOT_FOUND) {
+            if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
                 return resDto;
             } else {
                 throw new HomealoneException(ErrorCode.RECIPE_NOT_FOUND);
@@ -173,7 +168,7 @@ public class RecipeService {
         }
 
         Recipe recipe = recipeRepository.findById(id)
-            .orElseThrow(()-> new HomealoneException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new HomealoneException(ErrorCode.RECIPE_NOT_FOUND));
         commentService.deleteCommentByRecipe(recipe);
         scrapService.deleteScrapByPost(recipe);
         likeService.deleteLikeByPost(recipe);
@@ -192,7 +187,7 @@ public class RecipeService {
         }
 
         Recipe recipe = recipeRepository.findById(id)
-            .orElseThrow(()-> new HomealoneException(ErrorCode.RECIPE_NOT_FOUND));
+                .orElseThrow(() -> new HomealoneException(ErrorCode.RECIPE_NOT_FOUND));
 
         // 기본 레시피 수정
         recipe.setTitle(requestDto.getTitle());
@@ -261,15 +256,15 @@ public class RecipeService {
             Member member = authService.getMember();
             // List<Recipe> -> List<Post>
             List<Post> posts = recipePage.stream()
-                .map(post -> (Post) post)
-                .toList();
+                    .map(post -> (Post) post)
+                    .toList();
 
             Set<Long> likedRecipeIds = getLikedPostIds(member, posts);
             Set<Long> scrapedRecipeIds = getScrapedPostIds(member, posts);
 
             return recipePage.map(recipe -> createRecipePageDto(recipe, likedRecipeIds, scrapedRecipeIds));
         } catch (HomealoneException e) {
-            if (e.getErrorCode()==ErrorCode.MEMBER_NOT_FOUND) {
+            if (e.getErrorCode() == ErrorCode.MEMBER_NOT_FOUND) {
                 return recipePage.map(this::createRecipePageDto);
             } else {
                 throw new HomealoneException(ErrorCode.RECIPE_NOT_FOUND);
@@ -278,15 +273,27 @@ public class RecipeService {
     }
 
     public Page<RecipePageDto> findTopRecipeByView(Pageable pageable) {
-        Page<RecipePageDto> recipePageDtos = (Page<RecipePageDto>)redisUtil.get(POPULAR_RECIPES_KEY);
-        if (recipePageDtos==null) {
-            LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
-            recipePageDtos = recipeViewLogService.findTop4RecipesByViewCountInLastWeek(monthAgo,pageable).map(Recipe::toTopRecipePageDto);
-            if(recipePageDtos.isEmpty()){
-                recipePageDtos  = recipeRepository.findByOrderByViewDesc(pageable).map(Recipe::toTopRecipePageDto);
-            }
-            redisUtil.set(POPULAR_RECIPES_KEY, recipePageDtos, 360000); //1시간동안 저장
+        // Redis에서 데이터 가져오기
+        RecipePageDtoWrapper cachedWrapper = redisUtil.cachingGet(POPULAR_RECIPES_KEY, RecipePageDtoWrapper.class);
+        if (cachedWrapper != null) {
+            return cachedWrapper.toPage(pageable);
         }
+
+        // 데이터가 없으면 새로 조회
+        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+        Page<RecipePageDto> recipePageDtos = recipeViewLogService.findTop4RecipesByViewCountInLastWeek(monthAgo, pageable)
+                .map(RecipePageDto::toTopRecipePageDto);
+
+        // 조회 결과가 없을 경우 기본 조회
+        if (recipePageDtos.isEmpty()) {
+            recipePageDtos = recipeRepository.findByOrderByViewDesc(pageable)
+                    .map(RecipePageDto::toTopRecipePageDto);
+        }
+
+        // Redis에 저장
+        RecipePageDtoWrapper wrapper = new RecipePageDtoWrapper(recipePageDtos);
+        redisUtil.cachingSet(POPULAR_RECIPES_KEY, wrapper, 360000);
+
         return recipePageDtos;
     }
 }

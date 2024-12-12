@@ -159,40 +159,7 @@ public class Recipe extends Post {
     }
 
 
-    public RecipePageDto toTopRecipePageDto() {
-        String imageUrl = null;
-        if(images != null){
-            imageUrl = images.get(0).getImageUrl();
-        }
 
-        Member member = (Member) Hibernate.unproxy(this.getMember());
-        Long userId = this.getMember().getId();
-        String userName = this.getMember().getName();
-
-        RecipePageDto recipePageDto = RecipePageDto.builder()
-                .id(this.getId())
-                .title(title)
-                .description(description)
-                .portions(portions)
-                .recipeType(recipeType.getType())
-                .recipeTime(recipeTime.getTime())
-                .cuisine(cuisine.getCuisine())
-                .imageUrl(imageUrl)
-                .userId(userId)
-                .userName(userName)
-                .userImage(member.getImageUrl())
-                .build();
-
-        PostRelatedDto relatedDto = PostRelatedDto.builder()
-                .commentCount(this.getComments().size())
-                .likeCount(this.getLikes().size())
-                .scrapCount(this.getScraps().size())
-                .build();
-
-        recipePageDto.setRelatedDto(relatedDto);
-
-        return recipePageDto;
-    }
 
     public void addImage(RecipeImage image){
         this.images.add(image);

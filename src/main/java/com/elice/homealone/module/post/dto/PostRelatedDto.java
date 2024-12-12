@@ -7,6 +7,9 @@ import lombok.Setter;
 @Getter
 public class PostRelatedDto {
 
+    protected PostRelatedDto() {
+    }
+
     private int likeCount;
     private int scrapCount;
     private int commentCount;
