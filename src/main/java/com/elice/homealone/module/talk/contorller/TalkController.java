@@ -4,6 +4,7 @@ import com.elice.homealone.global.exception.response.Response;
 import com.elice.homealone.module.talk.Service.TalkService;
 import com.elice.homealone.module.talk.dto.TalkRequestDTO;
 import com.elice.homealone.module.talk.dto.TalkResponseDTO;
+import com.elice.homealone.module.talk.dto.TrendTalkResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -66,8 +67,8 @@ public class TalkController {
     }
     @Operation(summary = "혼잣말 인기 게시글 조회")
     @GetMapping("/view")
-    public ResponseEntity<Page<TalkResponseDTO>> findTopTalkByView(@PageableDefault(size = 8) Pageable pageable){
-        Page<TalkResponseDTO> topTalkByView = talkService.findTopTalkByView(pageable);
+    public ResponseEntity<Page<TrendTalkResponse>> findTopTalkByView(@PageableDefault(size = 8) Pageable pageable){
+        Page<TrendTalkResponse> topTalkByView = talkService.findTopTalkByView(pageable);
         return ResponseEntity.ok(topTalkByView);
     }
     @Operation(summary = "혼잣말 회원으로 조회")

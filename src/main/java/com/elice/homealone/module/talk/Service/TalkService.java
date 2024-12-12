@@ -10,11 +10,15 @@ import com.elice.homealone.module.like.repository.LikeRepository;
 import com.elice.homealone.module.like.service.LikeService;
 import com.elice.homealone.module.member.entity.Member;
 import com.elice.homealone.module.login.service.AuthService;
+import com.elice.homealone.module.recipe.dto.RecipePageDto;
+import com.elice.homealone.module.recipe.dto.RecipePageDtoWrapper;
 import com.elice.homealone.module.scrap.entity.Scrap;
 import com.elice.homealone.module.scrap.repository.ScrapRepository;
 import com.elice.homealone.module.scrap.service.ScrapService;
 import com.elice.homealone.module.tag.Repository.PostTagRepository;
 import com.elice.homealone.module.tag.entity.PostTag;
+import com.elice.homealone.module.talk.dto.TrendTalkResponse;
+import com.elice.homealone.module.talk.dto.TrendTalkResponseWrapper;
 import com.elice.homealone.module.talk.repository.TalkRepository;
 import com.elice.homealone.module.tag.Service.PostTagService;
 import com.elice.homealone.module.talk.dto.TalkRequestDTO;
@@ -160,18 +164,33 @@ public class TalkService {
         return talkInfoDto;
     }
 
+
     @Transactional
-    public Page<TalkResponseDTO> findTopTalkByView(Pageable pageable){
-        Page<TalkResponseDTO> talkResponseDTO = (Page<TalkResponseDTO>) redisUtil.get(POPULAR_TALK_KEY);
-        if (talkResponseDTO == null) {
-            LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
-            talkResponseDTO = talkViewLogService.findTopTalksByViewCountInLastWeek(monthAgo, pageable).map(TalkResponseDTO :: toTalkResponseDTO);
-            if(talkResponseDTO.isEmpty()){
-                talkResponseDTO =  talkRepository.findByOrderByViewDesc(pageable).map(TalkResponseDTO :: toTalkResponseDTO);
-            }
+    public Page<TrendTalkResponse> findTopTalkByView(Pageable pageable){
+        // Redis에서 데이터 가져오기
+        TrendTalkResponseWrapper cachedWrapper = redisUtil.cachingGet(POPULAR_TALK_KEY, TrendTalkResponseWrapper.class);
+        if (cachedWrapper != null) {
+            return cachedWrapper.toPage(pageable);
         }
-        return talkResponseDTO;
+
+        // 데이터가 없으면 새로 조회
+        LocalDateTime monthAgo = LocalDateTime.now().minusMonths(1);
+        Page<TrendTalkResponse> trendTalkResponses = talkViewLogService.findTopTalksByViewCountInLastWeek(monthAgo, pageable)
+                .map(TrendTalkResponse::toTrendTalkResponse);
+
+        // 조회 결과가 없을 경우 기본 조회
+        if (trendTalkResponses.isEmpty()) {
+            trendTalkResponses = talkRepository.findByOrderByViewDesc(pageable)
+                    .map(TrendTalkResponse::toTrendTalkResponse);
+        }
+
+        // Redis에 저장
+        TrendTalkResponseWrapper wrapper = new TrendTalkResponseWrapper(trendTalkResponses);
+        redisUtil.cachingSet(POPULAR_TALK_KEY, wrapper, 360000);
+
+        return trendTalkResponses;
     }
+
     @Transactional
     public Page<TalkResponseDTO> findTalkByMember(Pageable pageable){
         Member member = authService.getMember();
