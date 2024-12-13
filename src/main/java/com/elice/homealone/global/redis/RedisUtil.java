@@ -6,34 +6,44 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
 @Component
-@RequiredArgsConstructor
 public class RedisUtil {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, Object> redisBlackListTemplate;
-
     @Value("${spring.jwt.token.access-expiration-time}")
     private long expirationTime;
+    private final ObjectMapper objectMapper;
+
+    public RedisUtil(RedisTemplate<String, Object> redisTemplate,
+                     RedisTemplate<String, Object> redisBlackListTemplate,
+                     ObjectMapper objectMapper) {
+        this.redisTemplate = redisTemplate;
+        this.redisBlackListTemplate = redisBlackListTemplate;
+        this.objectMapper = objectMapper;
+        this.redisTemplate.setKeySerializer(new StringRedisSerializer());
+        this.redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+        this.redisBlackListTemplate.setKeySerializer(new StringRedisSerializer());
+        this.redisBlackListTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
+    }
 
     public void set(String key, Object value, long milliseconds) {
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(value.getClass()));
         redisTemplate.opsForValue().set(key, value, milliseconds, TimeUnit.MILLISECONDS);
     }
 
-    public void setBlackList(String key, Object o) {
-        redisBlackListTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(o.getClass()));
-        redisBlackListTemplate.opsForValue().set(key, o, expirationTime, TimeUnit.MILLISECONDS);
+    public void setBlackList(String key, Object value) {
+        redisBlackListTemplate.opsForValue().set(key, value, expirationTime, TimeUnit.MILLISECONDS);
     }
 
     public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
     }
+
     public Object getBlackList(String key) {
         return redisBlackListTemplate.opsForValue().get(key);
     }
@@ -50,7 +60,6 @@ public class RedisUtil {
         return redisTemplate.hasKey(key);
     }
 
-
     public boolean hasKeyBlackList(String key) {
         if (redisBlackListTemplate == null) {
             throw new HomealoneException(ErrorCode.REDIS_NOT_INITIALIZED);
@@ -59,25 +68,13 @@ public class RedisUtil {
     }
 
     public <T> void cachingSet(String key, T value, long milliseconds) {
-        // 직렬화 설정
-        Jackson2JsonRedisSerializer<T> serializer = new Jackson2JsonRedisSerializer<>((Class<T>) value.getClass());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(serializer);
-
-        // 데이터 저장
         redisTemplate.opsForValue().set(key, value, milliseconds, TimeUnit.MILLISECONDS);
     }
 
     public <T> T cachingGet(String key, Class<T> clazz) {
-        // 직렬화 설정
-        Jackson2JsonRedisSerializer<T> serializer = new Jackson2JsonRedisSerializer<>(clazz);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(serializer);
-
-        // 데이터 읽기
         Object value = redisTemplate.opsForValue().get(key);
         if (value != null) {
-            return clazz.cast(value);
+            return objectMapper.convertValue(value, clazz);
         }
         return null;
     }
